@@ -96,25 +96,47 @@ async function totalesMensuales(client = pool) {
   };
 }
 
-// Productos más vendidos por unidades (solo ventas, es decir ingresos con producto).
+// true si ya se aplicó 002_ventas.sql (tabla venta_detalle). Se cachea el "sí".
+let hayTablaVentas = false;
+async function tablaVentasExiste(client) {
+  if (hayTablaVentas) return true;
+  const { rows } = await client.query("SELECT to_regclass('public.venta_detalle') IS NOT NULL AS existe");
+  hayTablaVentas = rows[0].existe;
+  return hayTablaVentas;
+}
+
+// Productos más vendidos por unidades. Suma las ventas viejas (un ingreso con
+// producto_id) y las nuevas (venta_detalle, pendientes incluidas: la mercadería ya salió).
 async function topProductos({ limite = 5, desde, hasta } = {}, client = pool) {
-  const condiciones = [`mc.tipo = 'ingreso'`, `mc.cantidad_vendida IS NOT NULL`];
+  const condiciones = [];
   const valores = [];
   if (desde) {
     valores.push(desde);
-    condiciones.push(`mc.fecha >= $${valores.length}`);
+    condiciones.push(`u.fecha >= $${valores.length}`);
   }
   if (hasta) {
     valores.push(hasta);
-    condiciones.push(`mc.fecha <= $${valores.length}`);
+    condiciones.push(`u.fecha <= $${valores.length}`);
   }
   valores.push(limite);
+  const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
+
+  const ventasNuevas = (await tablaVentasExiste(client))
+    ? `UNION ALL
+       SELECT vd.producto_id, vd.cantidad, v.fecha_creacion
+         FROM venta_detalle vd JOIN ventas v ON v.id = vd.venta_id`
+    : '';
 
   const { rows } = await client.query(
-    `SELECT p.id, p.nombre, SUM(mc.cantidad_vendida) AS unidades
-       FROM movimientos_caja mc
-       JOIN productos p ON p.id = mc.producto_id
-      WHERE ${condiciones.join(' AND ')}
+    `SELECT p.id, p.nombre, SUM(u.cantidad) AS unidades
+       FROM (
+         SELECT producto_id, cantidad_vendida AS cantidad, fecha
+           FROM movimientos_caja
+          WHERE tipo = 'ingreso' AND cantidad_vendida IS NOT NULL
+         ${ventasNuevas}
+       ) u
+       JOIN productos p ON p.id = u.producto_id
+      ${where}
       GROUP BY p.id, p.nombre
       ORDER BY unidades DESC, p.nombre ASC
       LIMIT $${valores.length}`,

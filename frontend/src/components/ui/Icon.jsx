@@ -13,6 +13,7 @@ export const Icon = {
   alert: (p) => <svg {...base} {...p}><path d="M12 3l10 18H2z" /><path d="M12 9v5" /><path d="M12 17h.01" /></svg>,
   check: (p) => <svg {...base} {...p}><circle cx="12" cy="12" r="9" /><path d="M8.5 12.5l2.3 2.3 4.7-5" /></svg>,
   x: (p) => <svg {...base} {...p}><path d="M6 6l12 12" /><path d="M18 6L6 18" /></svg>,
+  chevronLeft: (p) => <svg {...base} {...p}><path d="M15 6l-6 6 6 6" /></svg>,
   chevronRight: (p) => <svg {...base} {...p}><path d="M9 6l6 6-6 6" /></svg>,
   up: (p) => <svg {...base} strokeWidth={2.2} {...p}><path d="M12 19V5" /><path d="M6 11l6-6 6 6" /></svg>,
   down: (p) => <svg {...base} strokeWidth={2.2} {...p}><path d="M12 5v14" /><path d="M6 13l6 6 6-6" /></svg>,

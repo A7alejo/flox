@@ -8,11 +8,13 @@ function toMovimiento(row) {
     tipo: row.tipo, // 'ingreso' | 'egreso'
     concepto: row.concepto,
     monto: Number(row.monto),
-    medioPago: row.medio_pago, // 'efectivo' | 'personal_pay' | 'transferencia' | null (solo egresos)
+    medioPago: row.medio_pago, // 'efectivo' | 'personal_pay' | null (solo egresos)
     productoId: row.producto_id,
     productoNombre: row.producto_nombre ?? null, // viene del JOIN en el listado
     cantidadVendida: row.cantidad_vendida,
     envioId: row.envio_id,
+    ventaId: row.venta_id ?? null, // ventas nuevas (varios productos / pendientes)
+    clienteNombre: row.cliente_nombre ?? null, // de la venta, si se cargó
     fecha: row.fecha, // ISO 8601
   };
 }
@@ -28,15 +30,50 @@ export function getBalance(rango = {}) {
   return request('/caja/balance', { params: rango });
 }
 
-// POST /caja/ventas  { productoId, cantidad, medioPago }
-// -> { movimiento, stockRestante }. El monto lo calcula el backend con el precio_venta vigente.
+function toVenta(row) {
+  return {
+    id: row.id,
+    estado: row.estado, // 'pendiente' | 'pagada'
+    clienteNombre: row.cliente_nombre,
+    total: Number(row.total),
+    medioPago: row.medio_pago, // null mientras está pendiente
+    fechaCreacion: row.fecha_creacion,
+    fechaPago: row.fecha_pago,
+    productos: (row.productos || []).map((p) => ({
+      productoId: p.producto_id ?? p.productoId,
+      nombre: p.producto_nombre ?? p.nombre,
+      cantidad: p.cantidad,
+      precioUnitario: Number(p.precio_unitario ?? p.precioUnitario),
+    })),
+  };
+}
+
+// POST /caja/ventas  { items: [{ productoId, cantidad }], estado, medioPago?, clienteNombre? }
+// -> { venta, movimiento (null si quedó pendiente), stock: [{ productoId, nombre, stockRestante }] }.
+// El total lo calcula el backend con el precio_venta vigente. medioPago solo si estado = 'pagada'.
 // Errores esperables: 409 stock insuficiente, 404 producto inexistente/inactivo.
-export async function registrarVenta({ productoId, cantidad, medioPago }) {
+export async function registrarVenta({ items, estado, medioPago, clienteNombre }) {
   const data = await request('/caja/ventas', {
     method: 'POST',
-    body: { productoId, cantidad, medioPago },
+    body: { items, estado, medioPago, clienteNombre },
   });
-  return { movimiento: toMovimiento(data.movimiento), stockRestante: data.stockRestante };
+  return {
+    venta: toVenta(data.venta),
+    movimiento: data.movimiento ? toMovimiento(data.movimiento) : null,
+    stock: data.stock,
+  };
+}
+
+// GET /caja/ventas?estado=pendiente|pagada
+export async function listarVentas({ estado } = {}) {
+  const rows = await request('/caja/ventas', { params: { estado } });
+  return rows.map(toVenta);
+}
+
+// POST /caja/ventas/:id/cobrar  { medioPago } -> { venta, movimiento }. 409 si ya estaba cobrada.
+export async function cobrarVenta(id, medioPago) {
+  const data = await request(`/caja/ventas/${id}/cobrar`, { method: 'POST', body: { medioPago } });
+  return { venta: toVenta(data.venta), movimiento: toMovimiento(data.movimiento) };
 }
 
 // POST /caja/egresos  { monto, concepto, medioPago?, envioId? } -> movimiento

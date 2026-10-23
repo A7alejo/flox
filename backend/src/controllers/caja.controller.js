@@ -2,9 +2,21 @@ const cajaService = require('../services/caja.service');
 const asyncHandler = require('../utils/asyncHandler');
 
 const registrarVenta = asyncHandler(async (req, res) => {
-  const { productoId, cantidad, medioPago } = req.body;
-  const resultado = await cajaService.registrarVenta({ productoId, cantidad, medioPago });
+  // items: [{ productoId, cantidad }]. Se sigue aceptando el formato viejo
+  // { productoId, cantidad } (una sola línea).
+  const { items, productoId, cantidad, medioPago, estado, clienteNombre } = req.body;
+  const resultado = await cajaService.registrarVenta({ items, productoId, cantidad, medioPago, estado, clienteNombre });
   res.status(201).json(resultado);
+});
+
+const listarVentas = asyncHandler(async (req, res) => {
+  const ventas = await cajaService.listarVentas({ estado: req.query.estado });
+  res.json(ventas);
+});
+
+const cobrarVenta = asyncHandler(async (req, res) => {
+  const resultado = await cajaService.cobrarVenta(req.params.id, { medioPago: req.body.medioPago });
+  res.json(resultado);
 });
 
 const registrarEgreso = asyncHandler(async (req, res) => {
@@ -29,4 +41,4 @@ const getBalance = asyncHandler(async (req, res) => {
   res.json(balance);
 });
 
-module.exports = { registrarVenta, registrarEgreso, listarMovimientos, getBalance };
+module.exports = { registrarVenta, listarVentas, cobrarVenta, registrarEgreso, listarMovimientos, getBalance };
