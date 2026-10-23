@@ -15,6 +15,7 @@ const VARIANTS = {
   success: 'bg-emerald-600 text-white hover:bg-emerald-700',
   danger: 'bg-red-600 text-white hover:bg-red-700',
   outline: 'bg-white text-slate-900 border border-slate-200 hover:bg-slate-50',
+  dangerOutline: 'bg-white text-red-700 border border-red-200 hover:bg-red-50',
   ghost: 'bg-transparent text-slate-500 hover:bg-slate-100',
 };
 

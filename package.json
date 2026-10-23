@@ -1,0 +1,13 @@
+{
+  "name": "flox",
+  "private": true,
+  "description": "Flox: levanta backend (API) y frontend (PWA) juntos para desarrollo local",
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,green \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "start": "npm run dev",
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

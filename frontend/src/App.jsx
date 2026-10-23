@@ -9,22 +9,26 @@ import DashboardPage from './pages/DashboardPage';
 import InventarioPage from './pages/InventarioPage';
 import CajaPage from './pages/CajaPage';
 import EnviosPage from './pages/EnviosPage';
+import UsuariosPage from './pages/UsuariosPage';
 
 const PAGES = {
   dashboard: DashboardPage,
   inventario: InventarioPage,
   caja: CajaPage,
   envios: EnviosPage,
+  usuarios: UsuariosPage, // solo admin (ver abajo)
 };
 
 function Shell() {
   const { usuario, logout } = useAuth();
   const [active, setActive] = useState('dashboard');
-  const Page = PAGES[active];
+  // Un no-admin nunca ve el panel aunque quede seleccionado (ej. si le cambian el rol)
+  const pagina = active === 'usuarios' && usuario.rol !== 'admin' ? 'dashboard' : active;
+  const Page = PAGES[pagina];
 
   return (
     <div className="min-h-screen flex bg-[var(--bg)]">
-      <Sidebar active={active} onChange={setActive} usuario={usuario} onLogout={logout} />
+      <Sidebar active={pagina} onChange={setActive} usuario={usuario} onLogout={logout} />
       <div className="flex-1 min-w-0 flex flex-col">
         <main className="flex-1 px-4 sm:px-6 md:px-10 pt-[max(1.5rem,env(safe-area-inset-top))] md:pt-8 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8 max-w-5xl w-full mx-auto">
           <InstallBanner />
@@ -34,7 +38,7 @@ function Shell() {
           Flox — panel de gestión interna
         </footer>
       </div>
-      <BottomNav active={active} onChange={setActive} />
+      <BottomNav active={pagina} onChange={setActive} usuario={usuario} />
     </div>
   );
 }

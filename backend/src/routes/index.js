@@ -5,6 +5,7 @@ const productosRoutes = require('./productos.routes');
 const cajaRoutes = require('./caja.routes');
 const enviosRoutes = require('./envios.routes');
 const dashboardRoutes = require('./dashboard.routes');
+const adminRoutes = require('./admin.routes');
 const requireAuth = require('../middlewares/requireAuth');
 
 const router = Router();
@@ -19,5 +20,6 @@ router.use('/productos', productosRoutes);
 router.use('/caja', cajaRoutes);
 router.use('/envios', enviosRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/admin', adminRoutes); // solo rol admin (ver admin.routes.js)
 
 module.exports = router;

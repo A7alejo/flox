@@ -3,6 +3,14 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  // Solo desarrollo: /api se reenvía al backend local. Así alcanza con
+  // compartir un único puerto (5173), p. ej. con el "Ports" de VS Code.
+  server: {
+    allowedHosts: ['.devtunnels.ms'],
+    proxy: {
+      '/api': 'http://localhost:4000',
+    },
+  },
   plugins: [
     react(),
     VitePWA({

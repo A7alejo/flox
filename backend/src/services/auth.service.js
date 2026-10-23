@@ -27,11 +27,13 @@ async function login({ email, password }) {
   const passwordOk = await bcrypt.compare(password, usuario.password_hash);
   if (!passwordOk) throw credencialesInvalidas();
 
-  const token = firmarToken({ userId: usuario.id });
+  // El rol va en el token como dato informativo; la autorización real
+  // la hace requireAuth leyendo el rol vigente de la base.
+  const token = firmarToken({ userId: usuario.id, rol: usuario.rol });
 
   return {
     token,
-    usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email },
+    usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol },
   };
 }
 

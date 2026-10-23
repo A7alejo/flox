@@ -7,6 +7,13 @@ export const NAV_ITEMS = [
   { id: 'envios', label: 'Envíos', mobileLabel: 'Envíos', icon: Icon.truck },
 ];
 
+// Panel de Admin: solo se agrega al menú si el usuario es admin.
+const ADMIN_ITEM = { id: 'usuarios', label: 'Usuarios', mobileLabel: 'Admin', icon: Icon.users };
+
+export function navItemsPara(usuario) {
+  return usuario?.rol === 'admin' ? [...NAV_ITEMS, ADMIN_ITEM] : NAV_ITEMS;
+}
+
 export function Sidebar({ active, onChange, usuario, onLogout }) {
   return (
     <aside className="hidden md:flex md:flex-col md:w-60 md:shrink-0 md:border-r md:border-slate-200 md:bg-white md:py-6 md:px-4 md:gap-1 md:sticky md:top-0 md:h-screen">
@@ -15,7 +22,7 @@ export function Sidebar({ active, onChange, usuario, onLogout }) {
         <span className="font-display font-extrabold text-lg">Flox</span>
       </div>
       <nav aria-label="Navegación principal" className="flex flex-col gap-1">
-        {NAV_ITEMS.map((item) => {
+        {navItemsPara(usuario).map((item) => {
           const isActive = active === item.id;
           return (
             <button
@@ -34,7 +41,7 @@ export function Sidebar({ active, onChange, usuario, onLogout }) {
       <div className="mt-auto flex items-center gap-2 px-2 pt-4 border-t border-slate-100">
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold truncate">{usuario.nombre}</div>
-          <div className="text-xs text-slate-500 truncate">{usuario.email}</div>
+          <div className="text-xs text-slate-500 truncate">{usuario.email}{usuario.rol === 'admin' ? ' · Admin' : ''}</div>
         </div>
         <button type="button" onClick={onLogout} aria-label="Cerrar sesión" className="w-12 h-12 rounded-lg text-slate-500 hover:bg-slate-100 flex items-center justify-center">
           <Icon.logout className="w-5 h-5" />
@@ -44,10 +51,10 @@ export function Sidebar({ active, onChange, usuario, onLogout }) {
   );
 }
 
-export function BottomNav({ active, onChange }) {
+export function BottomNav({ active, onChange, usuario }) {
   return (
     <nav aria-label="Navegación principal" className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 flex items-stretch justify-around pb-[env(safe-area-inset-bottom)] z-20">
-      {NAV_ITEMS.map((item) => {
+      {navItemsPara(usuario).map((item) => {
         const isActive = active === item.id;
         return (
           <button

@@ -140,7 +140,10 @@ CREATE TABLE usuarios (
   nombre               VARCHAR(100) NOT NULL,
   email                VARCHAR(150) NOT NULL UNIQUE,
   password_hash        TEXT NOT NULL,
-  activo               BOOLEAN NOT NULL DEFAULT TRUE,
+  -- Agregado en 001_roles_usuarios.sql (bases existentes: correr esa migración)
+  rol                  VARCHAR(20) NOT NULL DEFAULT 'operador'
+                          CONSTRAINT chk_rol_usuario CHECK (rol IN ('admin', 'operador')),
+  activo              BOOLEAN NOT NULL DEFAULT TRUE,
   fecha_creacion       TIMESTAMPTZ NOT NULL DEFAULT now(),
   fecha_actualizacion  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
