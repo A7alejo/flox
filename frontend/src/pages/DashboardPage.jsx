@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
+import * as cajaApi from '../api/caja';
 import * as dashboardApi from '../api/dashboard';
 import * as productosApi from '../api/productos';
 import { useAuth } from '../context/AuthContext';
 import { useFetch } from '../lib/useFetch';
-import { inicioDeMes, money, pctChange } from '../lib/format';
+import { MESES, mesActual, money, pctChange, rangoDeMes } from '../lib/format';
 import { Card } from '../components/ui/Primitives';
 import { Loadable, LoadingBlock } from '../components/ui/States';
+import { MonthSelector } from '../components/ui/MonthSelector';
 import { FinanceChart, PaymentDonut, StatTile, StockCriticidad, TopProductsList } from '../components/dashboard/Widgets';
 
 const RANGOS = [{ dias: 7, label: '7 días' }, { dias: 30, label: '30 días' }];
@@ -40,43 +42,51 @@ function FinanceCard() {
 
 export default function DashboardPage() {
   const { usuario } = useAuth();
-  const desde = useMemo(inicioDeMes, []);
+  // Mes elegido: afecta lo que es "del mes" (ingresos/egresos, medios de cobro, top).
+  // Saldo total, evolución y stock no dependen del mes.
+  const [periodo, setPeriodo] = useState(mesActual);
+  const rango = useMemo(() => rangoDeMes(periodo), [periodo]);
+  const rangoAnterior = useMemo(() => rangoDeMes({ anio: periodo.anio, mes: periodo.mes - 1 }), [periodo]);
+  // new Date(anio, -1, 1) ya resuelve diciembre del año anterior.
 
   const state = useFetch(
     async () => {
-      const [resumen, medios, top, productos] = await Promise.all([
+      const [resumen, mes, mesAnterior, medios, top, productos] = await Promise.all([
         dashboardApi.getResumen(),
-        dashboardApi.getMediosPago({ desde }),
-        dashboardApi.getTopProductos({ limite: 5, desde }),
+        cajaApi.getBalance(rango),
+        cajaApi.getBalance(rangoAnterior),
+        dashboardApi.getMediosPago(rango),
+        dashboardApi.getTopProductos({ limite: 5, ...rango }),
         productosApi.listar(),
       ]);
-      return { resumen, medios, top, productos };
+      return { resumen, mes, mesAnterior, medios, top, productos };
     },
-    []
+    [rango]
   );
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-start justify-between gap-3">
+      <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <h1 className="font-display font-extrabold text-2xl md:text-3xl">Resumen</h1>
           <p className="text-sm text-slate-500">Hola, {usuario.nombre}</p>
         </div>
-        {/* Cerrar sesión ahora vive en el Header (celular y escritorio) */}
+        <MonthSelector compact anio={periodo.anio} mes={periodo.mes} onChange={setPeriodo} />
       </header>
 
       <Loadable state={state}>
-        {({ resumen, medios, top, productos }) => {
-          const { actual, anterior } = resumen.mensual;
+        {({ resumen, mes, mesAnterior, medios, top, productos }) => {
+          const { actual } = resumen.mensual;
           // El saldo es acumulado: el del mes anterior es el actual menos lo que se movió este mes.
           const saldoAnterior = resumen.balance - (actual.ingresos - actual.egresos);
+          const nombreMes = MESES[periodo.mes].toLowerCase();
 
           return (
             <>
               <section aria-label="Indicadores principales" className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <StatTile label="Saldo total" value={money(resumen.balance)} delta={pctChange(resumen.balance, saldoAnterior)} goodWhenUp={true} />
-                <StatTile label="Ingresos del mes" value={money(actual.ingresos)} delta={pctChange(actual.ingresos, anterior.ingresos)} goodWhenUp={true} />
-                <StatTile label="Egresos del mes" value={money(actual.egresos)} delta={pctChange(actual.egresos, anterior.egresos)} goodWhenUp={false} />
+                <StatTile label={`Ingresos de ${nombreMes}`} value={money(mes.totalIngresos)} delta={pctChange(mes.totalIngresos, mesAnterior.totalIngresos)} goodWhenUp={true} />
+                <StatTile label={`Egresos de ${nombreMes}`} value={money(mes.totalEgresos)} delta={pctChange(mes.totalEgresos, mesAnterior.totalEgresos)} goodWhenUp={false} />
                 <StatTile label="Alertas de stock" value={String(resumen.alertasStock.length)} hint="productos para reponer" />
               </section>
 

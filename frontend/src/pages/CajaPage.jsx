@@ -3,13 +3,14 @@ import * as cajaApi from '../api/caja';
 import * as dashboardApi from '../api/dashboard';
 import { useFetch } from '../lib/useFetch';
 import { MEDIOS_PAGO, MEDIO_PAGO_LABEL } from '../lib/constants';
-import { formatFecha, money } from '../lib/format';
+import { MESES, formatFecha, mesActual, money, rangoDeMes } from '../lib/format';
 import { Button, Card } from '../components/ui/Primitives';
 import { Icon } from '../components/ui/Icon';
 import { Loadable } from '../components/ui/States';
 import { SaleModal } from '../components/caja/SaleModal';
 import { GastoModal } from '../components/caja/GastoModal';
 import { CobrarModal } from '../components/caja/CobrarModal';
+import { MonthSelector } from '../components/ui/MonthSelector';
 
 const MEDIO_EMOJI = { efectivo: '💵', personal_pay: '📲' };
 
@@ -83,42 +84,9 @@ function VentasPendientes({ state, onCobrar }) {
   );
 }
 
-const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-
-// Card con ◀ mes ▶. No deja avanzar más allá del mes actual.
-function SelectorMes({ anio, mes, onChange }) {
-  const hoy = new Date();
-  const esActual = anio === hoy.getFullYear() && mes === hoy.getMonth();
-  const mover = (delta) => {
-    const d = new Date(anio, mes + delta, 1);
-    onChange({ anio: d.getFullYear(), mes: d.getMonth() });
-  };
-  const flecha = 'w-12 h-12 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed';
-  return (
-    <Card className="p-2 flex items-center justify-between gap-2">
-      <button type="button" className={flecha} onClick={() => mover(-1)} aria-label="Mes anterior">
-        <Icon.chevronLeft className="w-5 h-5" />
-      </button>
-      <div className="text-center" aria-live="polite">
-        <div className="font-display font-bold text-lg">{MESES[mes]} {anio}</div>
-        {esActual && <div className="text-xs text-slate-500">Mes actual</div>}
-      </div>
-      <button type="button" className={flecha} onClick={() => mover(1)} disabled={esActual} aria-label="Mes siguiente">
-        <Icon.chevronRight className="w-5 h-5" />
-      </button>
-    </Card>
-  );
-}
-
 export default function CajaPage() {
-  const hoy = new Date();
-  const [periodo, setPeriodo] = useState({ anio: hoy.getFullYear(), mes: hoy.getMonth() });
-  // Rango del mes elegido en hora local: [día 1 00:00, último día 23:59:59.999]
-  const rango = useMemo(() => {
-    const inicio = new Date(periodo.anio, periodo.mes, 1);
-    const fin = new Date(new Date(periodo.anio, periodo.mes + 1, 1).getTime() - 1);
-    return { desde: inicio.toISOString(), hasta: fin.toISOString() };
-  }, [periodo]);
+  const [periodo, setPeriodo] = useState(mesActual);
+  const rango = useMemo(() => rangoDeMes(periodo), [periodo]);
 
   const state = useFetch(async () => {
     const [total, mes, medios, movimientos] = await Promise.all([
@@ -152,7 +120,7 @@ export default function CajaPage() {
         </div>
       </header>
 
-      <SelectorMes anio={periodo.anio} mes={periodo.mes} onChange={setPeriodo} />
+      <MonthSelector anio={periodo.anio} mes={periodo.mes} onChange={setPeriodo} />
 
       <Loadable state={state}>
         {({ total, mes, medios, movimientos }) => {

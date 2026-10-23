@@ -7,8 +7,9 @@ export const VIZ = {
   egresos: '#e34948',
   baseline: '#c3c2b7',
   grid: '#e1e0d9',
-  // Un color FIJO por medio de cobro (no por posición en el ranking).
-  medioPago: { efectivo: '#2a78d6', personal_pay: '#eb6834', transferencia: '#1baf7a' },
+  // Un color FIJO por medio de cobro (no por posición en el ranking):
+  // efectivo verde, Personal Pay violeta (pedido de los usuarios).
+  medioPago: { efectivo: '#15803D', personal_pay: '#7C3AED', transferencia: '#94a3b8' },
   status: {
     good: { hex: '#0ca30c', label: 'Óptimo' },
     warning: { hex: '#fab219', label: 'Medio' },

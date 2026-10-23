@@ -117,7 +117,7 @@ export function FinanceChart({ data }) {
 export function PaymentDonut({ data }) {
   const [hover, setHover] = useState(null);
   const total = data.reduce((s, d) => s + d.total, 0);
-  if (total === 0) return <p className="text-sm text-slate-500 py-6">Todavía no hay ingresos este mes.</p>;
+  if (total === 0) return <p className="text-sm text-slate-500 py-6">No hay ingresos en este mes.</p>;
 
   const R = 62, CX = 84, CY = 84, STROKE = 24, GAP = 3;
   const circumference = 2 * Math.PI * R;
@@ -175,7 +175,7 @@ export function PaymentDonut({ data }) {
 }
 
 export function TopProductsList({ items }) {
-  if (items.length === 0) return <p className="text-sm text-slate-500 py-6">Todavía no hay ventas este mes.</p>;
+  if (items.length === 0) return <p className="text-sm text-slate-500 py-6">No hay ventas en este mes.</p>;
   const max = Math.max(...items.map((i) => i.unidades));
   return (
     <ul className="flex flex-col gap-3">

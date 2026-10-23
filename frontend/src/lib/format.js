@@ -22,10 +22,19 @@ export function formatDia(dia, corto = false) {
   return new Date(y, m - 1, d).toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric' });
 }
 
-// ISO del primer instante del mes en curso (hora local del dispositivo).
-export function inicioDeMes() {
+export const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+// { anio, mes } del mes en curso (mes 0-11), para inicializar los selectores de mes.
+export function mesActual() {
   const n = new Date();
-  return new Date(n.getFullYear(), n.getMonth(), 1).toISOString();
+  return { anio: n.getFullYear(), mes: n.getMonth() };
+}
+
+// Rango ISO de un mes en hora local: [día 1 00:00, último día 23:59:59.999].
+export function rangoDeMes({ anio, mes }) {
+  const inicio = new Date(anio, mes, 1);
+  const fin = new Date(new Date(anio, mes + 1, 1).getTime() - 1);
+  return { desde: inicio.toISOString(), hasta: fin.toISOString() };
 }
 
 // Variación porcentual entera. null si no hay base de comparación (mes anterior en 0).
