@@ -1,18 +1,23 @@
 import { useState } from 'react';
 import * as productosApi from '../../api/productos';
 import { calcularPrecioVenta, money } from '../../lib/format';
+import { CATEGORIAS_PRODUCTOS, PRESENTACIONES, categoriaDe, nombreCompleto, separarNombre } from '../../lib/catalogo';
 import { Modal } from '../ui/Modal';
 import { Button, Card, Field, FormError, inputClass } from '../ui/Primitives';
+import { Dropdown } from '../ui/Dropdown';
 
 const num = (v) => Number(String(v).replace(',', '.')) || 0;
 
 // Alta y edición de producto. Si llega `producto` es edición.
 // El precio de venta lo calcula Postgres al guardar (columna GENERATED); lo que se ve acá es
 // solo el preview con la misma fórmula.
-export function ProductModal({ producto, onClose, onSaved }) {
+// Producto y presentación se eligen del catálogo (lib/catalogo.js); el nombre
+// guardado es "<producto> <presentación>" y la categoría sale del catálogo.
+export function ProductModal({ producto, existentes = [], onClose, onSaved, onEliminar }) {
   const editando = Boolean(producto);
-  const [nombre, setNombre] = useState(producto?.nombre ?? '');
-  const [categoria, setCategoria] = useState(producto?.categoria ?? '');
+  const inicial = separarNombre(producto?.nombre);
+  const [base, setBase] = useState(inicial.producto);
+  const [presentacion, setPresentacion] = useState(inicial.presentacion);
   const [stock, setStock] = useState(String(producto?.stockActual ?? 10));
   const [stockMinimo, setStockMinimo] = useState(String(producto?.stockMinimo ?? 5));
   const [costo, setCosto] = useState(String(producto?.costoBase ?? ''));
@@ -22,14 +27,17 @@ export function ProductModal({ producto, onClose, onSaved }) {
 
   const precio = calcularPrecioVenta(num(costo), margen);
   const ganancia = precio - num(costo);
-  const valido = nombre.trim() && costo !== '';
+  const nombre = base && presentacion ? nombreCompleto(base, presentacion) : '';
+  // Evita cargar dos veces el mismo producto + presentación (comparando sin mayúsculas).
+  const duplicado = nombre && existentes.some((p) => p.id !== producto?.id && p.nombre.toLowerCase() === nombre.toLowerCase());
+  const valido = nombre && !duplicado && costo !== '';
 
   const guardar = async () => {
     setSaving(true);
     setError(null);
     const datos = {
-      nombre: nombre.trim(),
-      categoria: categoria.trim() || undefined,
+      nombre,
+      categoria: categoriaDe(base),
       stockActual: Math.max(0, Math.round(num(stock))),
       stockMinimo: Math.max(0, Math.round(num(stockMinimo))),
       costoBase: num(costo),
@@ -74,13 +82,32 @@ export function ProductModal({ producto, onClose, onSaved }) {
       }
     >
       <div className="flex flex-col gap-4">
-        <Field label="Nombre del producto">
-          <input className={inputClass} placeholder="Ej: Lavandina 5L" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+        {editando && !inicial.producto && (
+          <p className="text-sm text-slate-500 -mb-1">
+            Este producto se cargó antes del catálogo (“{producto.nombre}”). Elegí producto y presentación para actualizarlo.
+          </p>
+        )}
+
+        <Field label="Producto">
+          <Dropdown
+            value={base}
+            onChange={setBase}
+            placeholder="Seleccionar producto"
+            grupos={CATEGORIAS_PRODUCTOS.map((c) => ({ label: c.categoria, opciones: c.productos.map((p) => ({ value: p, label: p })) }))}
+          />
         </Field>
 
-        <Field label="Categoría">
-          <input className={inputClass} placeholder="Ej: Limpieza de ropa" value={categoria} onChange={(e) => setCategoria(e.target.value)} />
+        <Field label="Litros / mL">
+          <Dropdown
+            value={presentacion}
+            onChange={setPresentacion}
+            placeholder="Seleccionar presentación"
+            grupos={PRESENTACIONES.map((g) => ({ label: g.grupo, opciones: g.opciones.map((o) => ({ value: o, label: o })) }))}
+          />
         </Field>
+
+        {base && <p className="text-xs text-slate-500 -mt-2">Categoría: <strong>{categoriaDe(base)}</strong></p>}
+        {duplicado && <FormError message={`Ya existe "${nombre}" en el inventario. Editá ese producto en lugar de crear otro.`} />}
 
         <div className="flex gap-3">
           <div className="flex-1">
@@ -132,9 +159,14 @@ export function ProductModal({ producto, onClose, onSaved }) {
         <FormError message={error} />
 
         {editando && (
-          <Button variant="outline" className="!text-red-700 !border-red-200" onClick={darDeBaja} disabled={saving}>
-            Dar de baja este producto
-          </Button>
+          <div className="flex gap-3">
+            <Button variant="dangerOutline" className="flex-1" onClick={darDeBaja} disabled={saving}>
+              Dar de baja
+            </Button>
+            <Button variant="danger" className="flex-1" onClick={() => onEliminar(producto)} disabled={saving}>
+              Eliminar
+            </Button>
+          </div>
         )}
       </div>
     </Modal>

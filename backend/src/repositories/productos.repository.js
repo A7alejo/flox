@@ -94,6 +94,27 @@ async function darDeBaja(id, client = pool) {
   return rows[0] || null;
 }
 
+// true si el producto aparece en ventas, envíos o movimientos de caja.
+// (venta_detalle solo se consulta si ya se aplicó 002_ventas.sql)
+async function tieneHistorial(id, client = pool) {
+  // Postgres valida las tablas al parsear: si venta_detalle no existe, no se la nombra.
+  const { rows: [t] } = await client.query("SELECT to_regclass('public.venta_detalle') IS NOT NULL AS hay");
+  const ventas = t.hay ? 'OR EXISTS (SELECT 1 FROM venta_detalle WHERE producto_id = $1)' : '';
+  const { rows } = await client.query(
+    `SELECT
+        EXISTS (SELECT 1 FROM envio_detalle WHERE producto_id = $1)
+     OR EXISTS (SELECT 1 FROM movimientos_caja WHERE producto_id = $1)
+     ${ventas} AS tiene`,
+    [id]
+  );
+  return rows[0].tiene;
+}
+
+async function eliminar(id, client = pool) {
+  const { rowCount } = await client.query('DELETE FROM productos WHERE id = $1', [id]);
+  return rowCount > 0;
+}
+
 module.exports = {
   listar,
   getById,
@@ -102,4 +123,6 @@ module.exports = {
   actualizar,
   descontarStock,
   darDeBaja,
+  tieneHistorial,
+  eliminar,
 };

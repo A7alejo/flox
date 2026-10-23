@@ -55,3 +55,9 @@ export async function actualizar(id, datos) {
 export function darDeBaja(id) {
   return request(`/productos/${id}`, { method: 'DELETE' });
 }
+
+// DELETE /productos/:id/definitivo -> 204. Borra de verdad; 409 si tiene ventas,
+// envíos o movimientos (en ese caso corresponde darDeBaja).
+export function eliminar(id) {
+  return request(`/productos/${id}/definitivo`, { method: 'DELETE' });
+}

@@ -5,6 +5,7 @@ import * as adminApi from '../api/admin';
 import { useAuth } from '../context/AuthContext';
 import { useFetch } from '../lib/useFetch';
 import { Badge, Button, Card, Field, FormError, inputClass } from '../components/ui/Primitives';
+import { Dropdown } from '../components/ui/Dropdown';
 import { Icon } from '../components/ui/Icon';
 import { Loadable } from '../components/ui/States';
 import { Modal } from '../components/ui/Modal';
@@ -130,9 +131,7 @@ function NuevoUsuarioModal({ onClose, onDone }) {
           <input className={inputClass} type="password" value={form.password} onChange={set('password')} placeholder="Mínimo 8 caracteres" required minLength={8} autoComplete="new-password" />
         </Field>
         <Field label="Rol">
-          <select className={inputClass} value={form.rol} onChange={set('rol')}>
-            {ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-          </select>
+          <Dropdown value={form.rol} onChange={(rol) => setForm((f) => ({ ...f, rol }))} opciones={ROLES} />
         </Field>
         <FormError message={error} />
       </form>
@@ -182,9 +181,7 @@ function EditarModal({ usuario, esYo, onClose, onDone }) {
           <input className={inputClass} type="email" value={form.email} onChange={set('email')} required autoComplete="off" />
         </Field>
         <Field label="Rol">
-          <select className={inputClass + ' disabled:bg-slate-50 disabled:text-slate-500'} value={form.rol} onChange={set('rol')} disabled={esYo}>
-            {ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-          </select>
+          <Dropdown value={form.rol} onChange={(rol) => setForm((f) => ({ ...f, rol }))} opciones={ROLES} disabled={esYo} />
         </Field>
         {esYo && <p className="text-sm text-slate-500 -mt-2">No podés cambiar tu propio rol.</p>}
         <FormError message={error} />

@@ -8,6 +8,7 @@ router.get('/', controller.listar);
 router.get('/:id', controller.obtener);
 router.post('/', controller.crear);
 router.put('/:id', controller.actualizar);
-router.delete('/:id', controller.darDeBaja);
+router.delete('/:id', controller.darDeBaja); // baja lógica (se oculta, conserva historial)
+router.delete('/:id/definitivo', controller.eliminar); // borrado real, solo sin historial
 
 module.exports = router;

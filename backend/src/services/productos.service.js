@@ -6,6 +6,7 @@
 // se usa solo para previsualizar el precio en el formulario ANTES de
 // guardar (ej. mientras el usuario escribe costo y margen).
 // =====================================================================
+const { withTransaction } = require('../config/db');
 const productosRepo = require('../repositories/productos.repository');
 const HttpError = require('../utils/HttpError');
 
@@ -56,11 +57,38 @@ async function darDeBaja(id) {
   return resultado;
 }
 
+// Borrado definitivo: solo si el producto nunca se usó. Si tiene ventas,
+// envíos o movimientos, se rechaza (409) para no romper el historial:
+// en ese caso corresponde "Dar de baja".
+const MSG_CON_HISTORIAL = 'Este producto tiene ventas o envíos registrados. Usá "Dar de baja" para ocultarlo.';
+
+async function eliminar(id) {
+  if (!/^\d+$/.test(String(id)) || Number(id) < 1 || Number(id) > 2147483647) {
+    throw new HttpError(400, 'Id de producto inválido');
+  }
+  try {
+    return await withTransaction(async (client) => {
+      // FOR UPDATE: una venta en curso del mismo producto espera a que esto termine.
+      const producto = await productosRepo.getByIdForUpdate(Number(id), client);
+      if (!producto) throw new HttpError(404, 'Producto no encontrado');
+      if (await productosRepo.tieneHistorial(producto.id, client)) {
+        throw new HttpError(409, MSG_CON_HISTORIAL);
+      }
+      await productosRepo.eliminar(producto.id, client);
+    });
+  } catch (err) {
+    // Por si igual quedó referenciado (FK RESTRICT de envio_detalle / venta_detalle)
+    if (err.code === '23503') throw new HttpError(409, MSG_CON_HISTORIAL);
+    throw err;
+  }
+}
+
 module.exports = {
   listar,
   obtener,
   crear,
   actualizar,
   darDeBaja,
+  eliminar,
   calcularPrecioVenta,
 };

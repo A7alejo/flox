@@ -38,6 +38,12 @@ const darDeBaja = asyncHandler(async (req, res) => {
   res.status(204).send();
 });
 
+// Borrado definitivo (solo productos sin historial; si no, 409).
+const eliminar = asyncHandler(async (req, res) => {
+  await productosService.eliminar(req.params.id);
+  res.status(204).send();
+});
+
 // Preview en vivo para el formulario: no toca la base, solo calcula.
 const calcularPrecio = asyncHandler(async (req, res) => {
   // Number('') y Number('  ') dan 0: tratamos vacíos como inválidos.
@@ -52,4 +58,4 @@ const calcularPrecio = asyncHandler(async (req, res) => {
   res.json({ precioVenta });
 });
 
-module.exports = { listar, obtener, crear, actualizar, darDeBaja, calcularPrecio };
+module.exports = { listar, obtener, crear, actualizar, darDeBaja, eliminar, calcularPrecio };
