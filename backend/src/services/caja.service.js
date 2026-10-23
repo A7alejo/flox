@@ -70,6 +70,11 @@ async function registrarEgreso({ monto, concepto, medioPago, envioId }) {
   // Si el egreso se asocia a un envío, verificamos que exista para no
   // terminar en un 500 por la foreign key de movimientos_caja.
   if (envioId) {
+    // Un id no entero haría fallar el cast de Postgres (500): lo cortamos antes.
+    // (se acepta número o string de dígitos, dentro del rango de INTEGER)
+    if (!/^\d+$/.test(String(envioId)) || Number(envioId) > 2147483647) {
+      throw new HttpError(400, 'envioId inválido');
+    }
     const envio = await enviosRepo.getById(envioId);
     if (!envio) throw new HttpError(404, 'Envío no encontrado');
   }
