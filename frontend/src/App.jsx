@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useAuth } from './context/AuthContext';
 import { BottomNav, Sidebar } from './components/layout/Nav';
 import { InstallBanner } from './components/layout/InstallBanner';
+import { Footer } from './components/layout/Footer';
+import { Header } from './components/layout/Header';
 import { Spinner } from './components/ui/States';
 import { Button } from './components/ui/Primitives';
 import LoginPage from './pages/LoginPage';
@@ -27,16 +29,18 @@ function Shell() {
   const Page = PAGES[pagina];
 
   return (
-    <div className="min-h-screen flex bg-[var(--bg)]">
-      <Sidebar active={pagina} onChange={setActive} usuario={usuario} onLogout={logout} />
-      <div className="flex-1 min-w-0 flex flex-col">
-        <main className="flex-1 px-4 sm:px-6 md:px-10 pt-[max(1.5rem,env(safe-area-inset-top))] md:pt-8 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8 max-w-5xl w-full mx-auto">
-          <InstallBanner />
-          <Page />
-        </main>
-        <footer className="hidden md:block px-10 py-4 max-w-5xl w-full mx-auto text-xs text-slate-500">
-          Flox — panel de gestión interna
-        </footer>
+    // Header arriba a todo el ancho; debajo, barra lateral (escritorio) + contenido.
+    <div className="min-h-screen flex flex-col bg-[var(--bg)]">
+      <Header active={pagina} usuario={usuario} onLogout={logout} />
+      <div className="flex-1 flex">
+        <Sidebar active={pagina} onChange={setActive} usuario={usuario} />
+        <div className="flex-1 min-w-0 flex flex-col">
+          <main className="flex-1 px-4 sm:px-6 md:px-10 pt-6 md:pt-8 pb-8 max-w-5xl w-full mx-auto">
+            <InstallBanner />
+            <Page />
+          </main>
+          <Footer />
+        </div>
       </div>
       <BottomNav active={pagina} onChange={setActive} usuario={usuario} />
     </div>

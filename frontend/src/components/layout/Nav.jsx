@@ -1,8 +1,8 @@
 import { Icon } from '../ui/Icon';
 
 export const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', mobileLabel: 'Inicio', icon: Icon.home },
-  { id: 'inventario', label: 'Inventario', mobileLabel: 'Stock', icon: Icon.box },
+  { id: 'dashboard', label: 'Inicio', mobileLabel: 'Inicio', icon: Icon.home },
+  { id: 'inventario', label: 'Stock', mobileLabel: 'Stock', icon: Icon.box },
   { id: 'caja', label: 'Caja', mobileLabel: 'Caja', icon: Icon.wallet },
   { id: 'envios', label: 'Envíos', mobileLabel: 'Envíos', icon: Icon.truck },
 ];
@@ -14,12 +14,19 @@ export function navItemsPara(usuario) {
   return usuario?.rol === 'admin' ? [...NAV_ITEMS, ADMIN_ITEM] : NAV_ITEMS;
 }
 
-export function Sidebar({ active, onChange, usuario, onLogout }) {
+// Texto que solo aparece con la barra abierta (mouse encima o foco con teclado).
+const LABEL = 'whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-has-[:focus-visible]:opacity-100';
+
+// Escritorio (prototipo "Menú lateral"): debajo del header, barra de 72px con
+// íconos que se abre a 232px con el mouse (o con Tab: foco visible; un clic no
+// la deja abierta). Está en el flujo de la página, así que al abrirse EMPUJA el
+// contenido en vez de taparlo. Cerrar sesión vive en el Header.
+export function Sidebar({ active, onChange, usuario }) {
   return (
-    <aside className="hidden md:flex md:flex-col md:w-60 md:shrink-0 md:border-r md:border-slate-200 md:bg-white md:py-6 md:px-4 md:gap-1 md:sticky md:top-0 md:h-screen">
-      <div className="flex items-center gap-2 px-2 pb-6">
-        <div className="w-9 h-9 rounded-lg bg-flox-600 text-white font-display font-extrabold flex items-center justify-center" aria-hidden="true">F</div>
-        <span className="font-display font-extrabold text-lg">Flox</span>
+    <aside className="group hidden md:block shrink-0 sticky top-[72px] self-start h-[calc(100vh-72px)] w-[72px] hover:w-[232px] has-[:focus-visible]:w-[232px] transition-[width] duration-200 overflow-hidden py-5 px-3 border-r border-[#DDE5E1] bg-white">
+      <div className="flex items-center gap-3 px-1.5 pb-5">
+        <div className="w-9 h-9 shrink-0 rounded-[10px] bg-[#0F766E] text-white font-display font-bold text-lg flex items-center justify-center" aria-hidden="true">F</div>
+        <span className={'font-display font-bold text-xl text-[#1F2A2E] ' + LABEL}>Flox</span>
       </div>
       <nav aria-label="Navegación principal" className="flex flex-col gap-1">
         {navItemsPara(usuario).map((item) => {
@@ -30,23 +37,16 @@ export function Sidebar({ active, onChange, usuario, onLogout }) {
               type="button"
               onClick={() => onChange(item.id)}
               aria-current={isActive ? 'page' : undefined}
-              className={'flex items-center gap-3 h-12 px-3 rounded-lg text-sm font-semibold transition-colors ' + (isActive ? 'bg-flox-100 text-flox-700' : 'text-slate-600 hover:bg-slate-50')}
+              aria-label={item.label}
+              title={item.label}
+              className={'flex items-center gap-3 h-11 px-3.5 rounded-xl text-[15px] transition-colors ' + (isActive ? 'bg-[#E3F1EE] text-[#0F3D3A] font-semibold' : 'text-[#4B5B5F] font-medium hover:bg-slate-50')}
             >
               <item.icon className="w-5 h-5 shrink-0" aria-hidden="true" />
-              {item.label}
+              <span className={LABEL}>{item.label}</span>
             </button>
           );
         })}
       </nav>
-      <div className="mt-auto flex items-center gap-2 px-2 pt-4 border-t border-slate-100">
-        <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold truncate">{usuario.nombre}</div>
-          <div className="text-xs text-slate-500 truncate">{usuario.email}{usuario.rol === 'admin' ? ' · Admin' : ''}</div>
-        </div>
-        <button type="button" onClick={onLogout} aria-label="Cerrar sesión" className="w-12 h-12 rounded-lg text-slate-500 hover:bg-slate-100 flex items-center justify-center">
-          <Icon.logout className="w-5 h-5" />
-        </button>
-      </div>
     </aside>
   );
 }

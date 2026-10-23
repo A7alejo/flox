@@ -6,6 +6,9 @@ const rateLimit = require('express-rate-limit');
 const loginRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
+  // Solo cuentan los intentos fallidos: entrar bien no "gasta" intentos
+  // (con el proxy de Vite todos comparten IP y se bloqueaban entre sí).
+  skipSuccessfulRequests: true,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: { message: 'Demasiados intentos. Probá de nuevo en unos minutos.' } },

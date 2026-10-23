@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext';
 import { useFetch } from '../lib/useFetch';
 import { inicioDeMes, money, pctChange } from '../lib/format';
 import { Card } from '../components/ui/Primitives';
-import { Icon } from '../components/ui/Icon';
 import { Loadable, LoadingBlock } from '../components/ui/States';
 import { FinanceChart, PaymentDonut, StatTile, StockCriticidad, TopProductsList } from '../components/dashboard/Widgets';
 
@@ -40,7 +39,7 @@ function FinanceCard() {
 }
 
 export default function DashboardPage() {
-  const { usuario, logout } = useAuth();
+  const { usuario } = useAuth();
   const desde = useMemo(inicioDeMes, []);
 
   const state = useFetch(
@@ -63,9 +62,7 @@ export default function DashboardPage() {
           <h1 className="font-display font-extrabold text-2xl md:text-3xl">Resumen</h1>
           <p className="text-sm text-slate-500">Hola, {usuario.nombre}</p>
         </div>
-        <button type="button" onClick={logout} aria-label="Cerrar sesión" className="md:hidden w-12 h-12 -mt-1 -mr-2 rounded-xl text-slate-500 flex items-center justify-center">
-          <Icon.logout className="w-5 h-5" />
-        </button>
+        {/* Cerrar sesión ahora vive en el Header (celular y escritorio) */}
       </header>
 
       <Loadable state={state}>
@@ -85,7 +82,8 @@ export default function DashboardPage() {
 
               <section aria-label="Gráficos financieros" className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
                 <FinanceCard />
-                <Card className="lg:col-span-2 p-5 md:p-6 flex flex-col gap-4">
+                {/* self-start: alto según su contenido, no estirada al del gráfico de al lado */}
+                <Card className="lg:col-span-2 lg:self-start p-5 md:p-6 flex flex-col gap-4">
                   <h2 className="font-semibold">Medios de cobro</h2>
                   <PaymentDonut data={medios} />
                 </Card>

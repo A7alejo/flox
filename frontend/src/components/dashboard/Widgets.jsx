@@ -124,13 +124,15 @@ export function PaymentDonut({ data }) {
   let cumulative = 0;
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-6">
+    // flex-wrap: si la tarjeta es angosta, la leyenda baja debajo del anillo en vez de desbordar.
+    <div className="flex flex-wrap items-center justify-center gap-6">
       <svg viewBox="0 0 168 168" className="w-36 h-36 shrink-0" role="img" aria-label="Desglose de ingresos del mes por medio de cobro">
         <circle cx={CX} cy={CY} r={R} fill="none" stroke="#F1F5F9" strokeWidth={STROKE} />
         {data.map((d, idx) => {
           const frac = d.total / total;
           const arc = frac * circumference;
-          const dash = Math.max(arc - GAP, 0.001);
+          // Con un solo medio de cobro (100%) el anillo va cerrado: sin el GAP de separación.
+          const dash = data.length === 1 ? circumference : Math.max(arc - GAP, 0.001);
           const el = (
             <circle
               key={d.medioPago}
@@ -158,13 +160,13 @@ export function PaymentDonut({ data }) {
         <text x={CX} y={CY + 14} textAnchor="middle" className="fill-slate-500 text-[8px] font-semibold">ingresos del mes</text>
       </svg>
 
-      <ul className="flex-1 w-full flex flex-col gap-2">
+      <ul className="flex-1 basis-56 min-w-0 flex flex-col gap-2">
         {data.map((d, idx) => (
           <li key={d.medioPago} className={'flex items-center gap-3 rounded-lg px-2 py-1.5 ' + (hover === idx ? 'bg-slate-50' : '')}>
             <span className="w-3 h-3 rounded-full shrink-0" style={{ background: VIZ.medioPago[d.medioPago] || '#94a3b8' }} aria-hidden="true"></span>
-            <span className="flex-1 text-sm font-medium text-slate-700 truncate">{MEDIO_PAGO_LABEL[d.medioPago] || 'Otro'}</span>
-            <span className="text-sm font-bold tabular-nums">{money(d.total)}</span>
-            <span className="text-xs text-slate-500 tabular-nums w-9 text-right">{Math.round((d.total / total) * 100)}%</span>
+            <span className="flex-1 min-w-0 text-sm font-medium text-slate-700 truncate">{MEDIO_PAGO_LABEL[d.medioPago] || 'Otro'}</span>
+            <span className="shrink-0 text-sm font-bold tabular-nums">{money(d.total)}</span>
+            <span className="shrink-0 text-xs text-slate-500 tabular-nums w-9 text-right">{Math.round((d.total / total) * 100)}%</span>
           </li>
         ))}
       </ul>
