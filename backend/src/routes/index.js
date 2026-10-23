@@ -1,0 +1,23 @@
+const { Router } = require('express');
+
+const authRoutes = require('./auth.routes');
+const productosRoutes = require('./productos.routes');
+const cajaRoutes = require('./caja.routes');
+const enviosRoutes = require('./envios.routes');
+const dashboardRoutes = require('./dashboard.routes');
+const requireAuth = require('../middlewares/requireAuth');
+
+const router = Router();
+
+// /auth maneja sus propias rutas públicas (login) y protegidas (me, password)
+router.use('/auth', authRoutes);
+
+// A partir de acá, todo exige sesión válida
+router.use(requireAuth);
+
+router.use('/productos', productosRoutes);
+router.use('/caja', cajaRoutes);
+router.use('/envios', enviosRoutes);
+router.use('/dashboard', dashboardRoutes);
+
+module.exports = router;
