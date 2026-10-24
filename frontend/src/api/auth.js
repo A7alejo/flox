@@ -1,5 +1,5 @@
 // Refleja backend/src/routes/auth.routes.js
-import { request } from './client';
+import { request, setCsrfToken } from './client';
 
 // POST /auth/login -> { usuario }. Setea la cookie httpOnly; el token no llega al frontend.
 // Un 401 acá significa "credenciales inválidas", no "sesión vencida".
@@ -9,12 +9,17 @@ export async function login(email, password) {
     body: { email, password },
     redirectOn401: false,
   });
+  setCsrfToken(data.csrfToken);
   return data.usuario;
 }
 
 // POST /auth/logout -> 204
-export function logout() {
-  return request('/auth/logout', { method: 'POST', redirectOn401: false });
+export async function logout() {
+  try {
+    return await request('/auth/logout', { method: 'POST', redirectOn401: false });
+  } finally {
+    setCsrfToken(null);
+  }
 }
 
 // GET /auth/me -> usuario | null. Se llama al arrancar la app: un 401 es
@@ -22,6 +27,7 @@ export function logout() {
 export async function me() {
   try {
     const data = await request('/auth/me', { redirectOn401: false });
+    setCsrfToken(data.csrfToken);
     return data.usuario;
   } catch (err) {
     if (err.status === 401) return null;

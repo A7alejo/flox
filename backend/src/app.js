@@ -4,6 +4,8 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
+const apiRateLimiter = require('./middlewares/apiRateLimiter');
+const { validarCsrf } = require('./middlewares/csrf');
 
 const app = express();
 
@@ -26,11 +28,13 @@ app.use(cors({
   credentials: true, // permite que el navegador mande/reciba la cookie httpOnly
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '100kb' })); // los pedidos de la app son chicos; corta bodies gigantes
 app.use(cookieParser());
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
+app.use('/api', apiRateLimiter);
+app.use(validarCsrf); // antes de las rutas: POST/PUT/PATCH/DELETE con sesión exigen X-CSRF-Token
 app.use('/api', routes);
 
 // 404 para rutas no definidas

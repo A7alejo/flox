@@ -71,4 +71,27 @@ async function listar({ estado, ids } = {}, client = pool) {
   return rows;
 }
 
-module.exports = { crear, agregarDetalle, getByIdForUpdate, marcarPagada, listar };
+// true si una venta de esa fecha quedó contada en "Vendido" del mes en curso:
+// es de este mes (hora de Argentina) y posterior al inicio del historial de
+// stock (las anteriores nunca se registraron en movimientos_stock).
+async function ventaContadaEnElMes(fecha, client = pool) {
+  const { rows } = await client.query(
+    `SELECT date_trunc('month', $1::timestamptz AT TIME ZONE 'America/Argentina/Buenos_Aires')
+             = date_trunc('month', now() AT TIME ZONE 'America/Argentina/Buenos_Aires')
+         AND $1::timestamptz >= COALESCE((SELECT min(fecha) FROM movimientos_stock), 'infinity') AS contada`,
+    [fecha]
+  );
+  return rows[0].contada;
+}
+
+async function detalle(ventaId, client = pool) {
+  const { rows } = await client.query('SELECT producto_id, cantidad FROM venta_detalle WHERE venta_id = $1', [ventaId]);
+  return rows;
+}
+
+// venta_detalle se borra sola (ON DELETE CASCADE).
+async function eliminar(id, client = pool) {
+  await client.query('DELETE FROM ventas WHERE id = $1', [id]);
+}
+
+module.exports = { crear, agregarDetalle, getByIdForUpdate, marcarPagada, listar, ventaContadaEnElMes, detalle, eliminar };

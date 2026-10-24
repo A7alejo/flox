@@ -19,6 +19,15 @@ const cobrarVenta = asyncHandler(async (req, res) => {
   res.json(resultado);
 });
 
+// Admin y operador (ver caja.routes.js). Devuelven el stock que volvió.
+const eliminarVenta = asyncHandler(async (req, res) => {
+  res.json(await cajaService.eliminarVenta(req.params.id));
+});
+
+const eliminarDelHistorial = asyncHandler(async (req, res) => {
+  res.json(await cajaService.eliminarDelHistorial(req.params.id));
+});
+
 const registrarEgreso = asyncHandler(async (req, res) => {
   const { monto, concepto, medioPago, envioId } = req.body;
   const movimiento = await cajaService.registrarEgreso({ monto, concepto, medioPago, envioId });
@@ -41,4 +50,4 @@ const getBalance = asyncHandler(async (req, res) => {
   res.json(balance);
 });
 
-module.exports = { registrarVenta, listarVentas, cobrarVenta, registrarEgreso, listarMovimientos, getBalance };
+module.exports = { registrarVenta, listarVentas, cobrarVenta, eliminarVenta, eliminarDelHistorial, registrarEgreso, listarMovimientos, getBalance };

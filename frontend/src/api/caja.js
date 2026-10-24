@@ -76,6 +76,12 @@ export async function cobrarVenta(id, medioPago) {
   return { venta: toVenta(data.venta), movimiento: toMovimiento(data.movimiento) };
 }
 
+// DELETE /caja/movimientos/:id (admin y operador) -> { ventaId, stockDevuelto: [{ productoId, cantidad }] }.
+// Una venta: saca el ingreso de caja y devuelve el stock. Un gasto: solo sale de caja.
+export function eliminarDelHistorial(movimientoId) {
+  return request(`/caja/movimientos/${movimientoId}`, { method: 'DELETE' });
+}
+
 // POST /caja/egresos  { monto, concepto, medioPago?, envioId? } -> movimiento
 export async function registrarEgreso({ monto, concepto, medioPago, envioId }) {
   const row = await request('/caja/egresos', {

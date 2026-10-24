@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from './context/AuthContext';
 import { BottomNav, Sidebar } from './components/layout/Nav';
 import { InstallBanner } from './components/layout/InstallBanner';
@@ -12,6 +12,7 @@ import InventarioPage from './pages/InventarioPage';
 import CajaPage from './pages/CajaPage';
 import EnviosPage from './pages/EnviosPage';
 import UsuariosPage from './pages/UsuariosPage';
+import { RUTAS, navegar, useRuta } from './lib/ruta';
 
 const PAGES = {
   dashboard: DashboardPage,
@@ -23,10 +24,18 @@ const PAGES = {
 
 function Shell() {
   const { usuario, logout } = useAuth();
-  const [active, setActive] = useState('dashboard');
-  // Un no-admin nunca ve el panel aunque quede seleccionado (ej. si le cambian el rol)
-  const pagina = active === 'usuarios' && usuario.rol !== 'admin' ? 'dashboard' : active;
+  // La sección sale de la URL (lib/ruta.js): recargar mantiene la pantalla y
+  // Atrás/Adelante se mueven dentro de la app.
+  const ruta = useRuta();
+  // Un no-admin nunca ve el panel aunque entre por la URL (o le cambien el rol);
+  // una dirección desconocida va al inicio.
+  const invalida = ruta.pagina === null || (ruta.pagina === 'usuarios' && usuario.rol !== 'admin');
+  const pagina = invalida ? 'dashboard' : ruta.pagina;
   const Page = PAGES[pagina];
+  useEffect(() => {
+    if (invalida) navegar('/', { reemplazar: true });
+  }, [invalida]);
+  const setActive = (id) => navegar(RUTAS[id]);
 
   return (
     // Header arriba a todo el ancho; debajo, barra lateral (escritorio) + contenido.
@@ -37,7 +46,7 @@ function Shell() {
         <div className="flex-1 min-w-0 flex flex-col">
           <main className="flex-1 px-4 sm:px-6 md:px-10 pt-6 md:pt-8 pb-8 max-w-5xl w-full mx-auto">
             <InstallBanner />
-            <Page />
+            <Page partes={invalida ? [] : ruta.partes} />
           </main>
           <Footer />
         </div>

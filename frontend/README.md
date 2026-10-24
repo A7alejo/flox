@@ -1,6 +1,11 @@
-# Flox — Frontend
+# Floxer — Frontend
 
 PWA mobile-first (React + Vite + Tailwind CSS) para la gestión interna de Flox.
+La app se llama **Floxer**; Flox sigue siendo la marca de los productos.
+
+> **Deploy:** el proyecto en Vercel tiene que llamarse `floxer`, para que la dirección
+> quede `https://floxer.vercel.app` (esa URL va en `CORS_ORIGINS` del backend).
+
 Consume la API de `../backend` (ver `backend/README.md`).
 
 ## Desarrollo

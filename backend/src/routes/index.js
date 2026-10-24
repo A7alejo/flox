@@ -2,6 +2,7 @@ const { Router } = require('express');
 
 const authRoutes = require('./auth.routes');
 const productosRoutes = require('./productos.routes');
+const stockRoutes = require('./stock.routes');
 const cajaRoutes = require('./caja.routes');
 const enviosRoutes = require('./envios.routes');
 const dashboardRoutes = require('./dashboard.routes');
@@ -17,6 +18,7 @@ router.use('/auth', authRoutes);
 router.use(requireAuth);
 
 router.use('/productos', productosRoutes);
+router.use('/stock', stockRoutes);
 router.use('/caja', cajaRoutes);
 router.use('/envios', enviosRoutes);
 router.use('/dashboard', dashboardRoutes);

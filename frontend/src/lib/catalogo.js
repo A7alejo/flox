@@ -14,18 +14,26 @@ export const CATEGORIAS_PRODUCTOS = [
 
 export const PRESENTACIONES = [
   { grupo: 'Litros', opciones: ['5 L', '3 L'] },
-  { grupo: 'Mililitros (mL)', opciones: ['900 mL', '800 mL', '600 mL', '450 mL', '300 mL'] },
+  { grupo: 'Mililitros (mL)', opciones: ['900 mL', '800 mL', '600 mL', '500 mL', '450 mL', '300 mL'] },
 ];
 
 const TODAS_PRESENTACIONES = PRESENTACIONES.flatMap((g) => g.opciones);
+
+// Productos que además se eligen por fragancia (el formulario muestra un
+// tercer desplegable solo para estos).
+export const FRAGANCIAS = {
+  'Aromatizante Flox': ['Lavanda', 'Marina', 'Citronela', 'Limón', 'Bebé', 'Pino'],
+};
+export const fraganciasDe = (producto) => FRAGANCIAS[producto] ?? null;
 
 export function categoriaDe(producto) {
   return CATEGORIAS_PRODUCTOS.find((c) => c.productos.includes(producto))?.categoria ?? null;
 }
 
-// Nombre que se guarda: "Jabón Líquido Flox 5 L"
-export function nombreCompleto(producto, presentacion) {
-  return `${producto} ${presentacion}`;
+// Nombre que se guarda: "Jabón Líquido Flox 5 L", o con fragancia
+// "Aromatizante Flox Lavanda 900 mL".
+export function nombreCompleto(producto, presentacion, fragancia) {
+  return [producto, fragancia, presentacion].filter(Boolean).join(' ');
 }
 
 // Para comparar nombres: sin tildes, minúsculas, sin la palabra "flox" y sin espacios extra.
@@ -46,11 +54,53 @@ export function categoriaParaMostrar({ nombre, categoria }) {
   return match?.categoria ?? categoria ?? null;
 }
 
-// Inverso de nombreCompleto, para editar. Si el nombre no sigue el catálogo
+// ---------------------------------------------------------------------
+// Imágenes de producto (frontend/public/productos/)
+// Una foto por producto y tamaño: <slug>-<tamaño>.png (ej. suavizante-900ml.png,
+// cloro-5l.png); con fragancia, <slug>-<fragancia>-<tamaño>.png (ej.
+// aromatizante-lavanda-900ml.png). Si no existe, la app muestra el ícono de siempre.
+// ---------------------------------------------------------------------
+const SLUGS = {
+  'Jabón Líquido Flox': 'jabon-liquido',
+  'Suavizante para Ropa Flox': 'suavizante',
+  'Detergente Flox': 'detergente',
+  'Detergente Doypack Flox': 'detergente-doypack',
+  'Detergente Ultra Flox': 'detergente-ultra',
+  'Desengrasante Flox': 'desengrasante',
+  'Desengrasante en Gatillo Flox': 'desengrasante-gatillo',
+  'Cloro Flox': 'cloro',
+  'Limpiador de Vidrios Flox': 'limpiador-vidrios',
+  'Aromatizante Flox': 'aromatizante',
+};
+
+const slugTamano = (presentacion) => presentacion.replace(/\s+/g, '').toLowerCase(); // "900 mL" -> "900ml"
+const slugFragancia = (fragancia) => normalizar(fragancia).replace(/\s+/g, '-'); // "Bebé" -> "bebe"
+
+// Ruta de la foto del producto en ese tamaño (y fragancia, si tiene). Productos
+// que no siguen el catálogo (cargados antes) no tienen foto: se ve el ícono.
+export function imagenesDeProducto(nombre = '') {
+  const { producto, presentacion, fragancia } = separarNombre(nombre);
+  if (!producto) return [];
+  const partes = [SLUGS[producto], fragancia && slugFragancia(fragancia), slugTamano(presentacion)].filter(Boolean);
+  return [`/productos/${partes.join('-')}.png`];
+}
+
+// Inverso de nombreCompleto, para editar: "Aromatizante Flox Lavanda 900 mL" →
+// producto, fragancia y presentación. Si el nombre no sigue el catálogo
 // (productos cargados antes de esta lista) devuelve vacío y se elige de nuevo.
 export function separarNombre(nombre = '') {
+  const vacio = { producto: '', presentacion: '', fragancia: '' };
   const presentacion = TODAS_PRESENTACIONES.find((p) => nombre.endsWith(' ' + p));
-  const producto = presentacion ? nombre.slice(0, -(presentacion.length + 1)) : null;
-  if (!presentacion || !categoriaDe(producto)) return { producto: '', presentacion: '' };
-  return { producto, presentacion };
+  if (!presentacion) return vacio;
+  let producto = nombre.slice(0, -(presentacion.length + 1));
+  let fragancia = '';
+  if (!categoriaDe(producto)) {
+    // ¿Es "<producto con fragancias> <fragancia>"?
+    for (const [prod, frags] of Object.entries(FRAGANCIAS)) {
+      const f = frags.find((fr) => producto === `${prod} ${fr}`);
+      if (f) { producto = prod; fragancia = f; break; }
+    }
+  }
+  if (!categoriaDe(producto)) return vacio;
+  return { producto, presentacion, fragancia };
 }

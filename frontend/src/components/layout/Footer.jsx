@@ -15,13 +15,13 @@ export function Footer() {
           <div className="w-5 h-5 rounded-md bg-[#0F766E] text-white font-display font-bold text-[11px] flex items-center justify-center" aria-hidden="true">
             F
           </div>
-          <span className="font-display font-bold text-sm text-[#E6F2EF]">Flox</span>
+          <span className="font-display font-bold text-sm text-[#E6F2EF]">Floxer</span>
         </div>
         <span>© {anio} · Versión {VERSION}</span>
       </footer>
 
       <footer className="hidden md:block bg-[#0F3D3A] px-4 py-4 text-center text-xs text-[#C9E2DD]">
-        <p><span className="font-semibold text-[#E6F2EF]">Flox</span> · Gestión de stock y caja</p>
+        <p><span className="font-semibold text-[#E6F2EF]">Floxer</span> · Gestión de stock y caja</p>
         <p className="mt-1">© {anio} · Versión {VERSION}</p>
       </footer>
     </>

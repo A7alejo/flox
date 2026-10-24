@@ -146,6 +146,62 @@ async function cobrarVenta(id, { medioPago }) {
   }));
 }
 
+// Borra una venta y revierte todo en una sola transacción: el ingreso en caja
+// (si estaba cobrada), la venta con su detalle y el stock, que vuelve.
+// Si la venta está contada en "Vendido" de este mes, lo devuelto se descuenta de
+// ahí (vuelve a 0, nunca negativo). Si es de un mes anterior, o de antes de que
+// empezara el historial de stock, entra como ajuste (los meses cerrados no cambian).
+const validarId = (id, que) => {
+  if (!/^\d+$/.test(String(id)) || Number(id) < 1 || Number(id) > 2147483647) {
+    throw new HttpError(400, `Id de ${que} inválido`);
+  }
+  return Number(id);
+};
+
+async function borrarVentaEnTransaccion(ventaId, client) {
+  const venta = await ventasRepo.getByIdForUpdate(ventaId, client);
+  if (!venta) throw new HttpError(404, 'Venta no encontrada');
+  const motivo = (await ventasRepo.ventaContadaEnElMes(venta.fecha_creacion, client)) ? 'venta' : 'ajuste';
+  const lineas = await ventasRepo.detalle(ventaId, client);
+  for (const l of lineas) {
+    await productosRepo.devolverStock(l.producto_id, l.cantidad, motivo, client);
+  }
+  await cajaRepo.eliminarMovimientosDeVenta(ventaId, client);
+  await ventasRepo.eliminar(ventaId, client);
+  return { ventaId, stockDevuelto: lineas.map((l) => ({ productoId: l.producto_id, cantidad: l.cantidad })) };
+}
+
+// DELETE /caja/ventas/:id (venta nueva, pagada o pendiente).
+async function eliminarVenta(id) {
+  const ventaId = validarId(id, 'venta');
+  return conMigracionVentas(() => withTransaction((client) => borrarVentaEnTransaccion(ventaId, client)));
+}
+
+// DELETE /caja/movimientos/:id: borrar desde el historial.
+// - Venta nueva (venta_id): se borra la venta entera y vuelve el stock.
+// - Venta vieja (un producto por movimiento): vuelve ese stock y se borra el movimiento.
+// - Gasto (o un ingreso sin venta): solo sale de caja; el stock no cambia.
+async function eliminarDelHistorial(id) {
+  const movimientoId = validarId(id, 'movimiento');
+  return withTransaction(async (client) => {
+    const mov = await cajaRepo.getMovimientoForUpdate(movimientoId, client);
+    if (!mov) throw new HttpError(404, 'Movimiento no encontrado');
+    if (mov.venta_id) return borrarVentaEnTransaccion(mov.venta_id, client);
+    if (mov.tipo !== 'ingreso' || !mov.producto_id) {
+      await cajaRepo.eliminarMovimiento(mov.id, client);
+      return { ventaId: null, stockDevuelto: [] };
+    }
+
+    const motivo = (await ventasRepo.ventaContadaEnElMes(mov.fecha, client)) ? 'venta' : 'ajuste';
+    if (mov.cantidad_vendida) await productosRepo.devolverStock(mov.producto_id, mov.cantidad_vendida, motivo, client);
+    await cajaRepo.eliminarMovimiento(mov.id, client);
+    return {
+      ventaId: null,
+      stockDevuelto: mov.cantidad_vendida ? [{ productoId: mov.producto_id, cantidad: mov.cantidad_vendida }] : [],
+    };
+  });
+}
+
 async function listarVentas({ estado } = {}) {
   if (estado && !ESTADOS_VENTA.includes(estado)) {
     throw new HttpError(400, `estado inválido. Valores permitidos: ${ESTADOS_VENTA.join(', ')}`);
@@ -188,4 +244,4 @@ async function getBalance(rango) {
   return cajaRepo.getBalance(rango);
 }
 
-module.exports = { registrarVenta, cobrarVenta, listarVentas, registrarEgreso, listarMovimientos, getBalance };
+module.exports = { registrarVenta, cobrarVenta, eliminarVenta, eliminarDelHistorial, listarVentas, registrarEgreso, listarMovimientos, getBalance };

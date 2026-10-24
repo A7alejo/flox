@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import * as productosApi from '../../api/productos';
 import { calcularPrecioVenta, money } from '../../lib/format';
-import { CATEGORIAS_PRODUCTOS, PRESENTACIONES, categoriaDe, nombreCompleto, separarNombre } from '../../lib/catalogo';
+import { CATEGORIAS_PRODUCTOS, PRESENTACIONES, categoriaDe, fraganciasDe, nombreCompleto, separarNombre } from '../../lib/catalogo';
 import { Modal } from '../ui/Modal';
 import { Button, Card, Field, FormError, inputClass } from '../ui/Primitives';
 import { Dropdown } from '../ui/Dropdown';
@@ -12,12 +12,13 @@ const num = (v) => Number(String(v).replace(',', '.')) || 0;
 // El precio de venta lo calcula Postgres al guardar (columna GENERATED); lo que se ve acá es
 // solo el preview con la misma fórmula.
 // Producto y presentación se eligen del catálogo (lib/catalogo.js); el nombre
-// guardado es "<producto> <presentación>" y la categoría sale del catálogo.
+// guardado es "<producto> [fragancia] <presentación>" y la categoría sale del catálogo.
 export function ProductModal({ producto, existentes = [], onClose, onSaved, onEliminar }) {
   const editando = Boolean(producto);
   const inicial = separarNombre(producto?.nombre);
   const [base, setBase] = useState(inicial.producto);
   const [presentacion, setPresentacion] = useState(inicial.presentacion);
+  const [fragancia, setFragancia] = useState(inicial.fragancia);
   const [stock, setStock] = useState(String(producto?.stockActual ?? 10));
   const [stockMinimo, setStockMinimo] = useState(String(producto?.stockMinimo ?? 5));
   const [costo, setCosto] = useState(String(producto?.costoBase ?? ''));
@@ -27,7 +28,14 @@ export function ProductModal({ producto, existentes = [], onClose, onSaved, onEl
 
   const precio = calcularPrecioVenta(num(costo), margen);
   const ganancia = precio - num(costo);
-  const nombre = base && presentacion ? nombreCompleto(base, presentacion) : '';
+  // Fragancia: solo para productos que la tienen (Aromatizante) y ahí es obligatoria.
+  const fragancias = fraganciasDe(base);
+  const elegirProducto = (p) => {
+    setBase(p);
+    if (!fraganciasDe(p)) setFragancia('');
+  };
+  const completo = base && presentacion && (!fragancias || fragancia);
+  const nombre = completo ? nombreCompleto(base, presentacion, fragancias ? fragancia : '') : '';
   // Evita cargar dos veces el mismo producto + presentación (comparando sin mayúsculas).
   const duplicado = nombre && existentes.some((p) => p.id !== producto?.id && p.nombre.toLowerCase() === nombre.toLowerCase());
   const valido = nombre && !duplicado && costo !== '';
@@ -91,11 +99,22 @@ export function ProductModal({ producto, existentes = [], onClose, onSaved, onEl
         <Field label="Producto">
           <Dropdown
             value={base}
-            onChange={setBase}
+            onChange={elegirProducto}
             placeholder="Seleccionar producto"
             grupos={CATEGORIAS_PRODUCTOS.map((c) => ({ label: c.categoria, opciones: c.productos.map((p) => ({ value: p, label: p })) }))}
           />
         </Field>
+
+        {fragancias && (
+          <Field label="Fragancia">
+            <Dropdown
+              value={fragancia}
+              onChange={setFragancia}
+              placeholder="Seleccionar fragancia"
+              opciones={fragancias.map((f) => ({ value: f, label: f }))}
+            />
+          </Field>
+        )}
 
         <Field label="Litros / mL">
           <Dropdown

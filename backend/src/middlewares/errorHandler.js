@@ -10,7 +10,9 @@ function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-va
 
   res.status(status).json({
     error: {
-      message: status === 500 ? 'Error interno del servidor' : err.message,
+      message: status === 500 ? 'Error interno del servidor'
+        : err.type === 'entity.too.large' ? 'El pedido es demasiado grande' // tope de express.json
+        : err.message,
     },
   });
 }

@@ -4,7 +4,7 @@
 // donde se ve el usuario y se puede cerrar sesión.
 const TITULOS = {
   dashboard: 'Inicio',
-  inventario: 'Inventario',
+  inventario: 'Stock',
   caja: 'Caja',
   envios: 'Envíos',
   usuarios: 'Usuarios',
@@ -19,12 +19,12 @@ export function Header({ active, usuario, onLogout }) {
   return (
     <header className="sticky top-0 z-20 bg-white border-b border-[#DDE5E1] pt-[env(safe-area-inset-top)]">
       <div className="h-[72px] px-4 md:px-8 flex items-center justify-between gap-3 text-[#1F2A2E]">
-        {/* Celular: logo + "Flox". Escritorio: solo el nombre de la sección actual. */}
+        {/* Celular: logo + "Floxer". Escritorio: solo el nombre de la sección actual. */}
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="md:hidden w-[34px] h-[34px] rounded-[10px] bg-[#0F766E] text-white font-display font-bold text-[17px] flex items-center justify-center shrink-0" aria-hidden="true">
             F
           </div>
-          <span className="md:hidden font-display font-bold text-lg">Flox</span>
+          <span className="md:hidden font-display font-bold text-lg">Floxer</span>
           <span className="hidden md:inline font-display font-bold text-xl truncate">{TITULOS[active]}</span>
         </div>
 

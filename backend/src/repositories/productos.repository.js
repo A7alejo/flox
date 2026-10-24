@@ -75,7 +75,10 @@ async function actualizar(id, { nombre, categoria, stockActual, stockMinimo, cos
   return rows[0] || null;
 }
 
+// Se usa dentro de la transacción de la venta: el motivo hace que el trigger de
+// movimientos_stock lo registre como 'venta' (y no como un ajuste manual).
 async function descontarStock(id, cantidad, client) {
+  await client.query("SELECT set_config('flox.motivo_stock', 'venta', true)");
   const { rows } = await client.query(
     `UPDATE productos
         SET stock_actual = stock_actual - $2
@@ -84,6 +87,13 @@ async function descontarStock(id, cantidad, client) {
     [id, cantidad]
   );
   return rows[0];
+}
+
+// Al borrar una venta vuelve la mercadería. `motivo` decide cómo lo ve el
+// stock por mes: 'venta' (resta de lo vendido) o 'ajuste' (corrección).
+async function devolverStock(id, cantidad, motivo, client) {
+  await client.query("SELECT set_config('flox.motivo_stock', $1, true)", [motivo]);
+  await client.query('UPDATE productos SET stock_actual = stock_actual + $2 WHERE id = $1', [id, cantidad]);
 }
 
 async function darDeBaja(id, client = pool) {
@@ -122,6 +132,7 @@ module.exports = {
   crear,
   actualizar,
   descontarStock,
+  devolverStock,
   darDeBaja,
   tieneHistorial,
   eliminar,

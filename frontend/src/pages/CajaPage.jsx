@@ -10,6 +10,7 @@ import { Loadable } from '../components/ui/States';
 import { SaleModal } from '../components/caja/SaleModal';
 import { GastoModal } from '../components/caja/GastoModal';
 import { CobrarModal } from '../components/caja/CobrarModal';
+import { EliminarVentaModal } from '../components/caja/EliminarVentaModal';
 import { MonthSelector } from '../components/ui/MonthSelector';
 
 const MEDIO_EMOJI = { efectivo: '💵', personal_pay: '📲' };
@@ -25,7 +26,8 @@ function tituloYDetalle(m) {
   return { titulo: m.clienteNombre ? `Venta a ${m.clienteNombre}` : 'Venta', detalle: productos };
 }
 
-function MovementRow({ m }) {
+// onEliminar: borrar del historial (ventas y gastos, admin y operador).
+function MovementRow({ m, onEliminar }) {
   const positivo = m.tipo === 'ingreso';
   const { titulo, detalle } = tituloYDetalle(m);
   return (
@@ -41,6 +43,13 @@ function MovementRow({ m }) {
       <div className={'font-bold text-sm tabular-nums ' + (positivo ? 'text-emerald-600' : 'text-red-600')}>
         {positivo ? '+' : '−'}{money(m.monto)}
       </div>
+      {onEliminar && (
+        <button type="button" onClick={() => onEliminar(m, titulo)} aria-label={(m.tipo === 'egreso' ? 'Eliminar gasto: ' : 'Eliminar venta: ') + titulo} className="w-12 h-12 -mr-2 rounded-xl flex items-center justify-center shrink-0">
+          <span className="w-9 h-9 rounded-lg border border-red-200 bg-white flex items-center justify-center">
+            <Icon.trash className="w-4 h-4 text-red-600" />
+          </span>
+        </button>
+      )}
     </div>
   );
 }
@@ -101,6 +110,7 @@ export default function CajaPage() {
   const pendientes = useFetch(() => cajaApi.listarVentas({ estado: 'pendiente' }), []);
   const [modal, setModal] = useState(null); // null | 'venta' | 'gasto'
   const [aCobrar, setACobrar] = useState(null);
+  const [aEliminar, setAEliminar] = useState(null); // { movimiento, titulo }
   const recargar = () => {
     state.reload();
     pendientes.reload();
@@ -167,7 +177,13 @@ export default function CajaPage() {
                 {movimientos.length === 0 ? (
                   <p className="text-sm text-slate-500 text-center py-8">No hay movimientos en {nombreMes} {periodo.anio}.</p>
                 ) : (
-                  movimientos.map((m) => <MovementRow key={m.id} m={m} />)
+                  movimientos.map((m) => (
+                    <MovementRow
+                      key={m.id}
+                      m={m}
+                      onEliminar={(movimiento, titulo) => setAEliminar({ movimiento, titulo })}
+                    />
+                  ))
                 )}
               </Card>
             </>
@@ -177,6 +193,9 @@ export default function CajaPage() {
 
       {modal === 'venta' && <SaleModal onClose={() => setModal(null)} onDone={recargar} />}
       {modal === 'gasto' && <GastoModal onClose={() => setModal(null)} onDone={state.reload} />}
+      {aEliminar && (
+        <EliminarVentaModal movimiento={aEliminar.movimiento} titulo={aEliminar.titulo} onClose={() => setAEliminar(null)} onDone={recargar} />
+      )}
       {aCobrar && <CobrarModal venta={aCobrar} onClose={() => setACobrar(null)} onDone={recargar} />}
     </div>
   );

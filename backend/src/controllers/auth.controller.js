@@ -1,13 +1,11 @@
 const authService = require('../services/auth.service');
 const asyncHandler = require('../utils/asyncHandler');
+const { COOKIE_MAX_AGE_MS } = require('../utils/jwt');
+const { emitirCsrfToken, borrarCsrfToken } = require('../middlewares/csrf');
 
 const COOKIE_NAME = process.env.COOKIE_NAME || 'flox_token';
 const EN_PRODUCCION = process.env.NODE_ENV === 'production';
 
-// Duración de la cookie alineada con la del JWT (en ms). Si cambiás
-// JWT_EXPIRES_IN, actualizá esto a mano (son dos formatos distintos,
-// uno de jsonwebtoken y otro de Express).
-const COOKIE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 días
 
 function setCookieToken(res, token) {
   res.cookie(COOKIE_NAME, token, {
@@ -25,17 +23,20 @@ const login = asyncHandler(async (req, res) => {
   setCookieToken(res, token);
   // El token NUNCA va en el body de la respuesta: vive solo en la
   // cookie httpOnly. El frontend no necesita (ni debe) leerlo.
-  res.json({ usuario });
+  // El token CSRF sí va en el body: el frontend lo manda en X-CSRF-Token.
+  res.json({ usuario, csrfToken: emitirCsrfToken(res) });
 });
 
 const logout = asyncHandler(async (req, res) => {
   res.clearCookie(COOKIE_NAME, { path: '/' });
+  borrarCsrfToken(res);
   res.status(204).send();
 });
 
 const me = asyncHandler(async (req, res) => {
   const usuario = await authService.obtenerPerfil(req.usuarioId);
-  res.json({ usuario });
+  // Al recargar la app el token CSRF en memoria se pierde: se renueva acá.
+  res.json({ usuario, csrfToken: emitirCsrfToken(res) });
 });
 
 const cambiarPassword = asyncHandler(async (req, res) => {

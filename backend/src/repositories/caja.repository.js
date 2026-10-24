@@ -21,6 +21,19 @@ async function crearMovimiento(
   return rows[0];
 }
 
+async function getMovimientoForUpdate(id, client) {
+  const { rows } = await client.query('SELECT * FROM movimientos_caja WHERE id = $1 FOR UPDATE', [id]);
+  return rows[0] || null;
+}
+
+async function eliminarMovimiento(id, client = pool) {
+  await client.query('DELETE FROM movimientos_caja WHERE id = $1', [id]);
+}
+
+async function eliminarMovimientosDeVenta(ventaId, client = pool) {
+  await client.query('DELETE FROM movimientos_caja WHERE venta_id = $1', [ventaId]);
+}
+
 async function listarMovimientos({ tipo, medioPago, desde, hasta, limit = 50, offset = 0 }, client = pool) {
   const condiciones = [];
   const valores = [];
@@ -87,4 +100,4 @@ async function getBalance({ desde, hasta } = {}, client = pool) {
   };
 }
 
-module.exports = { crearMovimiento, listarMovimientos, getBalance };
+module.exports = { crearMovimiento, listarMovimientos, getBalance, getMovimientoForUpdate, eliminarMovimiento, eliminarMovimientosDeVenta };

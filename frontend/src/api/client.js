@@ -18,6 +18,16 @@ export class ApiError extends Error {
   }
 }
 
+// Token CSRF de la sesión actual. Lo entregan POST /auth/login y GET
+// /auth/me; vive solo en memoria y viaja en X-CSRF-Token en cada pedido
+// que modifica datos (el backend responde 403 si falta o no coincide).
+let csrfToken = null;
+export function setCsrfToken(token) {
+  csrfToken = token || null;
+}
+
+const METODOS_QUE_MODIFICAN = ['POST', 'PUT', 'PATCH', 'DELETE'];
+
 // El AuthProvider registra acá qué hacer ante un 401 (limpiar el usuario
 // y mostrar el login). Así client.js no depende de React ni del router.
 let onUnauthorized = null;
@@ -51,13 +61,16 @@ function buildQuery(params) {
  */
 export async function request(path, { method = 'GET', body, params, redirectOn401 = true } = {}) {
   const hasBody = body !== undefined;
+  const headers = {};
+  if (hasBody) headers['Content-Type'] = 'application/json';
+  if (csrfToken && METODOS_QUE_MODIFICAN.includes(method.toUpperCase())) headers['X-CSRF-Token'] = csrfToken;
 
   let res;
   try {
     res = await fetch(BASE_URL + path + buildQuery(params), {
       method,
       credentials: 'include',
-      headers: hasBody ? { 'Content-Type': 'application/json' } : undefined,
+      headers,
       body: hasBody ? JSON.stringify(body) : undefined,
     });
   } catch {

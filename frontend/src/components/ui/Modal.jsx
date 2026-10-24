@@ -1,8 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Icon } from './Icon';
+import { registrarModal } from '../../lib/ruta';
 
 // Bottom-sheet en móvil, diálogo centrado desde sm:.
+// El botón Atrás (navegador o celular) la cierra sin cambiar de pantalla (ver lib/ruta.js).
 export function Modal({ title, onClose, children, footer }) {
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  useEffect(() => registrarModal(() => onCloseRef.current()), []);
+
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);

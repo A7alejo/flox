@@ -313,7 +313,7 @@ export default function UsuariosPage() {
       <header className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
         <div>
           <h1 className="font-display font-extrabold text-2xl md:text-3xl">Usuarios</h1>
-          <p className="text-sm text-slate-500 mt-1">Administrá quién entra a Flox y con qué rol.</p>
+          <p className="text-sm text-slate-500 mt-1">Administrá quién entra a Floxer y con qué rol.</p>
         </div>
         <Button onClick={() => setNuevo(true)}><Icon.plus className="w-4 h-4" aria-hidden="true" /> Nuevo usuario</Button>
       </header>

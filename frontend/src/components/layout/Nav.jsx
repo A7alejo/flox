@@ -26,7 +26,7 @@ export function Sidebar({ active, onChange, usuario }) {
     <aside className="group hidden md:block shrink-0 sticky top-[72px] self-start h-[calc(100vh-72px)] w-[72px] hover:w-[232px] has-[:focus-visible]:w-[232px] transition-[width] duration-200 overflow-hidden py-5 px-3 border-r border-[#DDE5E1] bg-white">
       <div className="flex items-center gap-3 px-1.5 pb-5">
         <div className="w-9 h-9 shrink-0 rounded-[10px] bg-[#0F766E] text-white font-display font-bold text-lg flex items-center justify-center" aria-hidden="true">F</div>
-        <span className={'font-display font-bold text-xl text-[#1F2A2E] ' + LABEL}>Flox</span>
+        <span className={'font-display font-bold text-xl text-[#1F2A2E] ' + LABEL}>Floxer</span>
       </div>
       <nav aria-label="Navegación principal" className="flex flex-col gap-1">
         {navItemsPara(usuario).map((item) => {

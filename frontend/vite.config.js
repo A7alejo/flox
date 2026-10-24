@@ -18,9 +18,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Flox — Gestión',
-        short_name: 'Flox',
-        description: 'Panel de gestión interna de Flox: stock, caja y envíos.',
+        name: 'Floxer — Gestión',
+        short_name: 'Floxer',
+        description: 'Floxer, panel de gestión interna de Flox: stock, caja y envíos.',
         lang: 'es-AR',
         start_url: '/',
         scope: '/',
