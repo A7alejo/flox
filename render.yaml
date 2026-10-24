@@ -1,0 +1,31 @@
+# Blueprint de Render para la API de Floxer (Render > New > Blueprint).
+# El frontend va en Vercel y le reenvía /api a este servicio (frontend/vercel.json):
+# si cambiás el nombre del servicio, actualizá también la URL en vercel.json.
+services:
+  - type: web
+    name: floxer-api
+    runtime: node
+    plan: free
+    region: virginia
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true # Render genera un secreto largo y aleatorio
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: COOKIE_NAME
+        value: flox_token
+      - key: CORS_ORIGINS
+        value: https://floxer.vercel.app
+      - key: DB_SSL
+        value: "true"
+      - key: DATABASE_URL
+        sync: false # se carga a mano en el panel (Session pooler de Supabase)
+      - key: DB_SSL_CA
+        sync: false # opcional: certificado de Supabase para verificar la conexión

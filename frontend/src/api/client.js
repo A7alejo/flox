@@ -8,7 +8,9 @@
 //   convierten en un ApiError con ese mensaje, listo para mostrar.
 // =====================================================================
 
-const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
+// Por defecto /api del mismo dominio: en desarrollo lo reenvía el proxy de
+// Vite y en producción el rewrite de vercel.json, así la cookie es propia.
+const BASE_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '');
 
 export class ApiError extends Error {
   constructor(message, status) {

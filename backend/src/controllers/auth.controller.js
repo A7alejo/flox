@@ -11,7 +11,10 @@ function setCookieToken(res, token) {
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true, // inaccesible desde JS del navegador -> no se puede robar vía XSS/localStorage
     secure: EN_PRODUCCION, // solo viaja por HTTPS en producción
-    sameSite: EN_PRODUCCION ? 'none' : 'lax', // 'none' porque frontend y backend viven en dominios distintos (Vercel/Render)
+    // Lax alcanza: en producción el navegador habla solo con floxer.vercel.app,
+    // que reenvía /api a Render (frontend/vercel.json). Una cookie de otro
+    // dominio (SameSite=None) la bloquea Safari en iPhone.
+    sameSite: 'lax',
     maxAge: COOKIE_MAX_AGE_MS,
     path: '/',
   });

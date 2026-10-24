@@ -3,15 +3,16 @@
 PWA mobile-first (React + Vite + Tailwind CSS) para la gestión interna de Flox.
 La app se llama **Floxer**; Flox sigue siendo la marca de los productos.
 
-> **Deploy:** el proyecto en Vercel tiene que llamarse `floxer`, para que la dirección
-> quede `https://floxer.vercel.app` (esa URL va en `CORS_ORIGINS` del backend).
+> **Deploy:** el proyecto en Vercel tiene que llamarse `floxer` (`https://floxer.vercel.app`),
+> con Root Directory `frontend`. `vercel.json` reenvía `/api` a la API en Render
+> (`floxer-api.onrender.com`). Pasos completos en `backend/README.md` > Deploy.
 
 Consume la API de `../backend` (ver `backend/README.md`).
 
 ## Desarrollo
 
 ```
-cp .env.example .env     # VITE_API_URL=http://localhost:4000/api
+cp .env.example .env     # VITE_API_URL=/api
 npm install
 npm run dev              # http://localhost:5173
 ```
@@ -26,12 +27,11 @@ tiene que figurar en su `CORS_ORIGINS` (ya viene así en `backend/.env.example`)
 
 | Variable | Dev | Producción (Vercel) |
 |---|---|---|
-| `VITE_API_URL` | `http://localhost:4000/api` | URL pública del backend en Render **con** el sufijo `/api`, ej. `https://flox-api.onrender.com/api` |
+| `VITE_API_URL` | `/api` (proxy de Vite a localhost:4000) | no se carga: por defecto `/api`, que `vercel.json` reenvía a Render |
 
-- Vite incrusta la variable en el build: si se cambia en Vercel hay que **re-deployar**.
-- La URL del frontend en Vercel tiene que estar en `CORS_ORIGINS` del backend (sin `*`),
-  y el backend debe correr con `NODE_ENV=production` para que la cookie salga
-  `Secure; SameSite=None`.
+- La API siempre se llama en el mismo dominio que la app, así la cookie de sesión
+  es propia (`SameSite=Lax`) y funciona también en Safari/iPhone.
+- Si se cambia la variable, Vite la incrusta en el build: hay que **re-deployar**.
 
 ## Estructura
 

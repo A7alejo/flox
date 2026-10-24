@@ -39,6 +39,7 @@ export default defineConfig({
         // (otro origen, con cookie de sesión) nunca se cachean: van siempre a la red.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//], // la API nunca la responde el service worker
       },
     }),
   ],

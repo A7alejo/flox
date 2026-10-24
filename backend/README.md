@@ -41,18 +41,35 @@ nunca valida reglas de negocio.
 6. `npm run dev` (con nodemon) o `npm start`
 7. Probar: `GET http://localhost:4000/health` → `{ "status": "ok" }`
 
-## Deploy en Render
+## Deploy (Render + Vercel + Supabase)
 
-- Build command: `npm install`
-- Start command: `npm start`
-- Variables de entorno: copiar las mismas de `.env`, con estos cambios para producción:
-  - `NODE_ENV=production` (activa cookies `Secure` + `SameSite=None`, imprescindible
-    porque el frontend en Vercel y el backend en Render son dominios distintos)
-  - `JWT_SECRET` con un valor generado para producción, distinto al de desarrollo
-  - `CORS_ORIGINS` con la URL exacta del frontend en Vercel (sin `*`)
-- Después del primer deploy, correr `npm run crear-usuario` **una vez**, apuntando
-  `DATABASE_URL` a la base de producción (se puede correr en local, ya que Supabase
-  es accesible desde afuera).
+Esquema: el navegador habla **solo** con `https://floxer.vercel.app`. Vercel sirve
+la PWA y reenvía `/api/*` a `https://floxer-api.onrender.com` (`frontend/vercel.json`).
+Así la cookie de sesión es del mismo dominio y funciona también en Safari/iPhone,
+que bloquea las cookies de terceros.
+
+**1. Render (API)** — New > Blueprint > repo `A7alejo/flox`: toma `render.yaml`
+de la raíz (servicio `floxer-api`, plan free, `rootDir: backend`, health check
+`/health`). `JWT_SECRET` lo genera Render. Cargar a mano:
+- `DATABASE_URL`: la del **Session pooler** de Supabase (`*.pooler.supabase.com:5432`).
+- `DB_SSL_CA` (recomendado): el certificado de Supabase, para verificar la conexión.
+
+Si Render no da el nombre `floxer-api`, actualizar la URL en `frontend/vercel.json`.
+
+**2. Vercel (PWA)** — Add New > Project > repo `A7alejo/flox`:
+- Project Name: `floxer` (queda `floxer.vercel.app`).
+- Root Directory: `frontend`. Framework: Vite (build `npm run build`, output `dist`).
+- No hace falta `VITE_API_URL`: por defecto es `/api`.
+
+**3. Supabase** — la base ya tiene `schema.sql` y las migraciones 001 a 004.
+Los usuarios existentes sirven tal cual; para crear más: Panel de Admin o
+`npm run crear-usuario` apuntando `DATABASE_URL` a esa base.
+
+**4. Probar**: `https://floxer-api.onrender.com/health` → `{ "status": "ok" }`, después
+entrar a `https://floxer.vercel.app` desde el celular, iniciar sesión e instalar la app.
+
+> Render free se duerme tras ~15 min sin uso: el primer pedido después tarda
+> ~30-60 s en responder. Es normal en el plan gratuito.
 
 ## Endpoints
 
@@ -134,10 +151,12 @@ exigen sesión** (cookie `flox_token` válida) — si no, responden `401`.
   podría pasar si el token se guardara en `localStorage`). El frontend ni
   siquiera necesita manejar el token: solo tiene que mandar
   `credentials: 'include'` en cada `fetch`.
-- **`secure` + `sameSite` según el entorno**: en producción (`NODE_ENV=production`)
-  la cookie va con `Secure` (solo viaja por HTTPS) y `SameSite=None` (necesario
-  porque Vercel y Render son dominios distintos). En desarrollo local va con
-  `SameSite=Lax` sin `Secure`, porque `localhost` no tiene HTTPS.
+- **`secure` + `sameSite`**: la cookie va siempre con `SameSite=Lax`, porque
+  el navegador solo ve el dominio de Vercel (que reenvía `/api` a Render). En
+  producción (`NODE_ENV=production`) además va con `Secure` (solo HTTPS); en
+  desarrollo no, porque `localhost` no tiene HTTPS.
+- **CSRF**: los POST/PUT/PATCH/DELETE con sesión exigen el encabezado
+  `X-CSRF-Token` (`middlewares/csrf.js`); si falta o no coincide, `403`.
 - **Mismo mensaje de error** si el email no existe o si la contraseña es
   incorrecta ("Credenciales inválidas"), para no revelarle a un atacante
   qué emails son válidos.

@@ -1,8 +1,8 @@
 // =====================================================================
 // Protección CSRF con "doble envío" (mismo esquema que hogarGestion).
-// La cookie de sesión viaja sola en cada pedido (en producción va con
-// SameSite=None porque frontend y backend están en dominios distintos),
-// así que otra página podría armar un pedido con la sesión de alguien.
+// La cookie de sesión viaja sola en cada pedido, así que otra página
+// podría intentar armar un pedido con la sesión de alguien. SameSite=Lax
+// ya frena la mayoría de los casos; el token es la segunda barrera.
 // Para evitarlo, al iniciar sesión (y en GET /auth/me) el backend entrega
 // un token aleatorio: va en la cookie flox_csrf y en el body. El frontend
 // lo guarda en memoria y lo manda en el encabezado X-CSRF-Token en cada
@@ -25,7 +25,7 @@ function emitirCsrfToken(res) {
   res.cookie(CSRF_COOKIE, token, {
     httpOnly: false, // el valor que usa el frontend viene en el body; esto es solo el "doble"
     secure: EN_PRODUCCION,
-    sameSite: EN_PRODUCCION ? 'none' : 'lax',
+    sameSite: 'lax',
     maxAge: COOKIE_MAX_AGE_MS,
     path: '/',
   });
