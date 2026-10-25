@@ -103,3 +103,9 @@ html.dark {
 
 .dark .text-blue-700 { color: #93C5FD; }
 .dark .bg-blue-100 { background-color: #172A45; }
+
+/* Textos dentro de gráficos SVG (centro del donut, etiquetas de barras):
+   con más especificidad para que ganen a las clases de Tailwind. */
+.dark svg text.fill-slate-900 { fill: var(--d-texto); }
+.dark svg text.fill-slate-500 { fill: var(--d-texto-suave); }
+.dark circle[stroke="#F1F5F9"] { stroke: var(--d-borde); }
