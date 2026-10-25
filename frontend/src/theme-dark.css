@@ -1,0 +1,105 @@
+/* =====================================================================
+   Floxer — modo oscuro (solo apariencia).
+   Se activa con la clase "dark" en <html> (ver src/lib/tema.js).
+   No cambia ninguna pantalla: recolorea las mismas clases de Tailwind que
+   ya usan, con la paleta del prototipo aprobado. Si una pantalla nueva usa
+   un color que no está acá, en oscuro se ve con su color claro: agregarlo.
+   ===================================================================== */
+
+html.dark {
+  color-scheme: dark; /* barras de scroll, selects y teclados nativos en oscuro */
+  --bg: #0B1215;
+  --accent: #2DD4BF;
+
+  --d-superficie: #141D21;    /* tarjetas, header, barras (antes blanco) */
+  --d-superficie-2: #1B262B;  /* fondos suaves, hover */
+  --d-hundido: #10191D;       /* fondos apenas más oscuros que la tarjeta */
+  --d-borde: #26343A;
+  --d-borde-fuerte: #34464D;
+  --d-texto: #E6EEF0;
+  --d-texto-2: #C2CFD3;
+  --d-texto-suave: #93A4AB;
+  --d-texto-tenue: #6F8288;
+  --d-acento: #2DD4BF;
+  --d-acento-texto: #5EEAD4;
+  --d-acento-suave: #0F2A28;
+  --d-acento-suave-2: #12332F;
+  --d-acento-borde: #1D4A45;
+}
+
+.dark body { color: var(--d-texto); }
+.dark ::-webkit-scrollbar-thumb { background: var(--d-borde-fuerte); }
+.dark ::placeholder { color: var(--d-texto-tenue); }
+
+/* ---------- Superficies ---------- */
+.dark .bg-white { background-color: var(--d-superficie); }
+.dark .bg-slate-50 { background-color: var(--d-hundido); }
+.dark .bg-slate-100 { background-color: var(--d-superficie-2); }
+.dark .bg-slate-200 { background-color: var(--d-borde); }
+.dark .bg-flox-50,
+.dark .bg-\[\#D9F0EC\],
+.dark .bg-\[\#E3F1EE\] { background-color: var(--d-acento-suave); }
+.dark .bg-flox-100 { background-color: var(--d-acento-suave-2); }
+.dark .bg-\[\#0F3D3A\] { background-color: #0A2321; } /* footer */
+
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-100:hover { background-color: var(--d-superficie-2); }
+.dark .hover\:bg-flox-50:hover { background-color: var(--d-acento-suave); }
+.dark .disabled\:bg-slate-50:disabled { background-color: var(--d-hundido); }
+
+/* ---------- Bordes ---------- */
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-\[\#DDE5E1\] { border-color: var(--d-borde); }
+.dark .border-slate-300,
+.dark .border-\[\#B8C6C1\],
+.dark .hover\:border-slate-300:hover { border-color: var(--d-borde-fuerte); }
+.dark .border-slate-500 { border-color: var(--d-texto-tenue); }
+.dark .border-slate-900 { border-color: var(--d-texto); }
+.dark .border-flox-100 { border-color: var(--d-acento-borde); }
+
+/* ---------- Textos ---------- */
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-\[\#1F2A2E\] { color: var(--d-texto); }
+.dark .text-slate-700,
+.dark .text-slate-600 { color: var(--d-texto-2); }
+.dark .text-slate-500,
+.dark .text-\[\#4B5B5F\] { color: var(--d-texto-suave); }
+.dark .text-slate-400 { color: var(--d-texto-tenue); }
+.dark .text-flox-600 { color: var(--d-acento); }
+.dark .text-flox-700,
+.dark .text-teal-800,
+.dark .text-teal-900,
+.dark .text-\[\#0F5C55\],
+.dark .text-\[\#0F3D3A\] { color: var(--d-acento-texto); }
+
+/* ---------- Gráficos (SVG) ---------- */
+.dark .fill-slate-900 { fill: var(--d-texto); }
+.dark .fill-slate-500 { fill: var(--d-texto-suave); }
+.dark [stroke="#e1e0d9"] { stroke: var(--d-borde); }   /* grilla */
+.dark [stroke="#c3c2b7"] { stroke: var(--d-borde-fuerte); } /* línea base */
+.dark [fill="#e1e0d9"] { fill: var(--d-borde); }
+.dark [fill="#c3c2b7"] { fill: var(--d-borde-fuerte); }
+
+/* ---------- Estados (ingresos, egresos, avisos) ---------- */
+.dark .text-emerald-600,
+.dark .text-emerald-700,
+.dark .text-emerald-800 { color: #4ADE80; }
+.dark .bg-emerald-100 { background-color: #12301F; }
+
+.dark .text-red-600,
+.dark .text-red-700 { color: #F87171; }
+.dark .bg-red-50,
+.dark .bg-red-100,
+.dark .hover\:bg-red-50:hover { background-color: #3B1518; }
+.dark .border-red-200 { border-color: #5B2226; }
+
+.dark .text-amber-700 { color: #FBBF24; }
+.dark .text-orange-700,
+.dark .text-orange-800 { color: #FDBA74; }
+.dark .bg-orange-100 { background-color: #3A2510; }
+.dark .border-orange-200 { border-color: #5A3A17; }
+
+.dark .text-blue-700 { color: #93C5FD; }
+.dark .bg-blue-100 { background-color: #172A45; }

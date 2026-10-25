@@ -1,8 +1,9 @@
-import { SelectorTema } from '../ui/SelectorTema';
 // Barra superior (diseño aprobado): a la izquierda, logo (celular) o sección actual (escritorio);
 // usuario (avatar, nombre, rol) y cerrar sesión a la derecha.
 // En escritorio convive con la barra lateral; en celular es el único lugar
 // donde se ve el usuario y se puede cerrar sesión.
+import { TemaSelector } from './TemaSelector';
+
 const TITULOS = {
   dashboard: 'Inicio',
   inventario: 'Stock',
@@ -38,7 +39,7 @@ export function Header({ active, usuario, onLogout }) {
           <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-[#D9F0EC] text-[#0F5C55] font-bold text-[15px] md:text-base flex items-center justify-center shrink-0 md:order-1" aria-hidden="true">
             {inicial}
           </div>
-          <SelectorTema />
+          <TemaSelector />
           <button
             type="button"
             onClick={onLogout}

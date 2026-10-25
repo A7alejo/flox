@@ -8,11 +8,9 @@ import '@fontsource/sora/600.css';
 import '@fontsource/sora/700.css';
 import '@fontsource/sora/800.css';
 import './index.css';
+import './theme-dark.css'; // modo oscuro: se activa con la clase "dark" en <html>
 import App from './App';
-import { iniciarTema } from './lib/tema';
 import { AuthProvider } from './context/AuthContext';
-
-iniciarTema();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

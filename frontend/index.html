@@ -12,6 +12,16 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Floxer</title>
+    <script>
+      // Tema antes de pintar (evita el destello claro). Misma lógica que src/lib/tema.js.
+      try {
+        var t = localStorage.getItem('floxer-tema') || 'auto';
+        if (t === 'oscuro' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#10191D');
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Flox — tema único claro; tokens base para el fondo y el chrome del shell */
+/* Flox — tema claro; tokens base para el fondo y el chrome del shell (oscuro: theme-dark.css) */
 :root {
   color-scheme: light;
   --bg: #F8FAFC;
@@ -29,51 +29,3 @@ body {
 input[type="range"] { accent-color: var(--accent); }
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-/* Modo oscuro: se activa con html[data-theme="oscuro"] (lib/tema.js).
-   Redefine los colores de Tailwind que usan las pantallas, sin tocarlas. */
-html[data-theme="oscuro"] {
-  color-scheme: dark;
-  --bg: #0E1513;
-}
-
-html[data-theme="oscuro"] body {
-  color: #E6EFEC;
-}
-
-html[data-theme="oscuro"] .bg-white { background-color: #17221F; }
-html[data-theme="oscuro"] .bg-slate-50 { background-color: #15201D; }
-html[data-theme="oscuro"] .bg-slate-100 { background-color: #1F2D29; }
-html[data-theme="oscuro"] .bg-slate-200 { background-color: #26362F; }
-html[data-theme="oscuro"] .bg-\[\#D9F0EC\] { background-color: #1F3A34; }
-html[data-theme="oscuro"] .bg-emerald-100 { background-color: #123F33; }
-html[data-theme="oscuro"] .bg-red-50 { background-color: #3B1717; }
-html[data-theme="oscuro"] .bg-red-100 { background-color: #4A1D1D; }
-
-html[data-theme="oscuro"] .border-slate-100,
-html[data-theme="oscuro"] .border-slate-200 { border-color: #26362F; }
-html[data-theme="oscuro"] .border-slate-300,
-html[data-theme="oscuro"] .border-\[\#B8C6C1\] { border-color: #3A4D46; }
-html[data-theme="oscuro"] .border-\[\#DDE5E1\] { border-color: #26362F; }
-html[data-theme="oscuro"] .border-red-200 { border-color: #6B2A2A; }
-
-html[data-theme="oscuro"] .text-slate-900,
-html[data-theme="oscuro"] .text-slate-800,
-html[data-theme="oscuro"] .text-slate-700,
-html[data-theme="oscuro"] .text-\[\#1F2A2E\] { color: #E6EFEC; }
-html[data-theme="oscuro"] .text-slate-600,
-html[data-theme="oscuro"] .text-slate-500,
-html[data-theme="oscuro"] .text-\[\#4B5B5F\] { color: #9FB3AE; }
-html[data-theme="oscuro"] .text-slate-400 { color: #7A8F89; }
-html[data-theme="oscuro"] .text-\[\#0F5C55\] { color: #5EE0CF; }
-html[data-theme="oscuro"] .text-emerald-700,
-html[data-theme="oscuro"] .text-emerald-800,
-html[data-theme="oscuro"] .text-emerald-600 { color: #6EE7B7; }
-html[data-theme="oscuro"] .text-red-700,
-html[data-theme="oscuro"] .text-red-600 { color: #FCA5A5; }
-html[data-theme="oscuro"] .text-amber-700 { color: #FCD34D; }
-html[data-theme="oscuro"] .text-teal-800,
-html[data-theme="oscuro"] .text-teal-900 { color: #5EE0CF; }
-
-html[data-theme="oscuro"] .hover\:bg-slate-50:hover { background-color: #1F2D29; }
-html[data-theme="oscuro"] ::-webkit-scrollbar-thumb { background: #3A4D46; }
