@@ -21,5 +21,6 @@ export const Icon = {
   eye: (p) => <svg {...base} {...p}><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>,
   eyeOff: (p) => <svg {...base} {...p}><path d="M17.9 17.9A10.4 10.4 0 0112 19C5.6 19 2 12 2 12a18 18 0 015.1-5.9" /><path d="M9.9 5.2A9.7 9.7 0 0112 5c6.4 0 10 7 10 7a18 18 0 01-2.2 3.2" /><path d="M3 3l18 18" /></svg>,
   users: (p) => <svg {...base} {...p}><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0113 0" /><path d="M16 4.6a3.5 3.5 0 010 6.8" /><path d="M18.5 14.2A6.5 6.5 0 0121.5 20" /></svg>,
+  barcode: (p) => <svg {...base} {...p}><path d="M3 7V5a1 1 0 011-1h2M18 4h2a1 1 0 011 1v2M21 17v2a1 1 0 01-1 1h-2M6 20H4a1 1 0 01-1-1v-2" /><path d="M7 8v8M10 8v8M13 8v8M17 8v8" /></svg>,
   share: (p) => <svg {...base} {...p}><path d="M12 3v12" /><path d="M8 7l4-4 4 4" /><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" /></svg>,
 };

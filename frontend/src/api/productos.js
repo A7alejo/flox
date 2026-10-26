@@ -12,6 +12,7 @@ export function toProducto(row) {
     id: row.id,
     nombre: row.nombre,
     categoria: row.categoria,
+    codigoBarras: row.codigo_barras ?? null, // null si todavía no se cargó
     stockActual: row.stock_actual,
     stockMinimo: row.stock_minimo,
     costoBase: Number(row.costo_base),
@@ -41,7 +42,7 @@ export async function calcularPrecio(costoBase, porcentajeMargen) {
   return data.precioVenta;
 }
 
-// POST /productos  { nombre, categoria?, stockActual?, stockMinimo?, costoBase, porcentajeMargen? }
+// POST /productos  { nombre, categoria?, stockActual?, stockMinimo?, costoBase, porcentajeMargen?, codigoBarras? }
 export async function crear(datos) {
   return toProducto(await request('/productos', { method: 'POST', body: datos }));
 }

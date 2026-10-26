@@ -5,6 +5,8 @@ import { CATEGORIAS_PRODUCTOS, PRESENTACIONES, categoriaDe, fraganciasDe, nombre
 import { Modal } from '../ui/Modal';
 import { Button, Card, Field, FormError, inputClass } from '../ui/Primitives';
 import { Dropdown } from '../ui/Dropdown';
+import { EscanerCodigo } from '../ui/EscanerCodigo';
+import { Icon } from '../ui/Icon';
 
 const num = (v) => Number(String(v).replace(',', '.')) || 0;
 
@@ -13,7 +15,8 @@ const num = (v) => Number(String(v).replace(',', '.')) || 0;
 // solo el preview con la misma fórmula.
 // Producto y presentación se eligen del catálogo (lib/catalogo.js); el nombre
 // guardado es "<producto> [fragancia] <presentación>" y la categoría sale del catálogo.
-export function ProductModal({ producto, existentes = [], onClose, onSaved, onEliminar }) {
+// codigoInicial: código escaneado en Stock que todavía no tenía producto.
+export function ProductModal({ producto, existentes = [], codigoInicial = '', onClose, onSaved, onEliminar }) {
   const editando = Boolean(producto);
   const inicial = separarNombre(producto?.nombre);
   const [base, setBase] = useState(inicial.producto);
@@ -23,6 +26,8 @@ export function ProductModal({ producto, existentes = [], onClose, onSaved, onEl
   const [stockMinimo, setStockMinimo] = useState(String(producto?.stockMinimo ?? 5));
   const [costo, setCosto] = useState(String(producto?.costoBase ?? ''));
   const [margen, setMargen] = useState(producto?.porcentajeMargen ?? 45);
+  const [codigo, setCodigo] = useState(producto?.codigoBarras ?? codigoInicial);
+  const [escaneando, setEscaneando] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -39,6 +44,8 @@ export function ProductModal({ producto, existentes = [], onClose, onSaved, onEl
   // Evita cargar dos veces el mismo producto + presentación (comparando sin mayúsculas).
   const duplicado = nombre && existentes.some((p) => p.id !== producto?.id && p.nombre.toLowerCase() === nombre.toLowerCase());
   const valido = nombre && !duplicado && costo !== '';
+  // Aviso (no bloquea): el mismo código ya está en otro producto.
+  const codigoEnOtro = codigo.trim() && existentes.find((p) => p.id !== producto?.id && p.codigoBarras === codigo.trim());
 
   const guardar = async () => {
     setSaving(true);
@@ -50,6 +57,7 @@ export function ProductModal({ producto, existentes = [], onClose, onSaved, onEl
       stockMinimo: Math.max(0, Math.round(num(stockMinimo))),
       costoBase: num(costo),
       porcentajeMargen: margen,
+      codigoBarras: codigo.trim() || null,
     };
     try {
       if (editando) await productosApi.actualizar(producto.id, datos);
@@ -126,6 +134,27 @@ export function ProductModal({ producto, existentes = [], onClose, onSaved, onEl
         </Field>
 
         {base && <p className="text-xs text-slate-500 -mt-2">Categoría: <strong>{categoriaDe(base)}</strong></p>}
+        <Field label="Código de barras">
+          <div className="flex gap-2">
+            <input
+              inputMode="numeric"
+              autoComplete="off"
+              className={inputClass + ' flex-1 min-w-0 tabular-nums'}
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value)}
+              placeholder="Ej: 7798163052808"
+              maxLength={32}
+            />
+            <Button variant="outline" onClick={() => setEscaneando(true)} className="shrink-0">
+              <Icon.barcode className="w-5 h-5" aria-hidden="true" />
+              Escanear
+            </Button>
+          </div>
+        </Field>
+        {codigoEnOtro && (
+          <p className="text-xs text-amber-700 -mt-2">Este código ya lo tiene "{codigoEnOtro.nombre}". Revisá que sea el producto correcto.</p>
+        )}
+
         {duplicado && <FormError message={`Ya existe "${nombre}" en el inventario. Editá ese producto en lugar de crear otro.`} />}
 
         <div className="flex gap-3">
@@ -188,6 +217,14 @@ export function ProductModal({ producto, existentes = [], onClose, onSaved, onEl
           </div>
         )}
       </div>
+
+      {escaneando && (
+        <EscanerCodigo
+          titulo="Escanear código del producto"
+          onDetect={(c) => { setCodigo(c); setEscaneando(false); }}
+          onClose={() => setEscaneando(false)}
+        />
+      )}
     </Modal>
   );
 }

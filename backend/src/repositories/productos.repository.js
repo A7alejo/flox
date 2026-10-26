@@ -13,8 +13,8 @@ async function listar({ search, categoria, soloActivos = true }, client = pool) 
     condiciones.push('activo = true');
   }
   if (search) {
-    valores.push(`%${search}%`);
-    condiciones.push(`nombre ILIKE $${valores.length}`);
+    valores.push(`%${search}%`, String(search).trim());
+    condiciones.push(`(nombre ILIKE $${valores.length - 1} OR codigo_barras = $${valores.length})`);
   }
   if (categoria) {
     valores.push(categoria);
@@ -24,7 +24,7 @@ async function listar({ search, categoria, soloActivos = true }, client = pool) 
   const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
 
   const { rows } = await client.query(
-    `SELECT id, nombre, categoria, stock_actual, stock_minimo, costo_base,
+    `SELECT id, nombre, categoria, codigo_barras, stock_actual, stock_minimo, costo_base,
             porcentaje_margen, precio_venta, activo, fecha_actualizacion
        FROM productos
        ${where}
@@ -49,17 +49,18 @@ async function getByIdForUpdate(id, client) {
   return rows[0] || null;
 }
 
-async function crear({ nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen }, client = pool) {
+async function crear({ nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen, codigoBarras }, client = pool) {
   const { rows } = await client.query(
-    `INSERT INTO productos (nombre, categoria, stock_actual, stock_minimo, costo_base, porcentaje_margen)
-     VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO productos (nombre, categoria, stock_actual, stock_minimo, costo_base, porcentaje_margen, codigo_barras)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      RETURNING *`,
-    [nombre, categoria || null, stockActual ?? 0, stockMinimo ?? 5, costoBase, porcentajeMargen ?? 0]
+    [nombre, categoria || null, stockActual ?? 0, stockMinimo ?? 5, costoBase, porcentajeMargen ?? 0, codigoBarras ?? null]
   );
   return rows[0];
 }
 
-async function actualizar(id, { nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen }, client = pool) {
+// codigoBarras: undefined = no se toca; null = se borra (por eso no va con COALESCE).
+async function actualizar(id, { nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen, codigoBarras }, client = pool) {
   const { rows } = await client.query(
     `UPDATE productos
         SET nombre = COALESCE($2, nombre),
@@ -67,10 +68,11 @@ async function actualizar(id, { nombre, categoria, stockActual, stockMinimo, cos
             stock_actual = COALESCE($4, stock_actual),
             stock_minimo = COALESCE($5, stock_minimo),
             costo_base = COALESCE($6, costo_base),
-            porcentaje_margen = COALESCE($7, porcentaje_margen)
+            porcentaje_margen = COALESCE($7, porcentaje_margen),
+            codigo_barras = CASE WHEN $8 THEN $9 ELSE codigo_barras END
       WHERE id = $1
       RETURNING *`,
-    [id, nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen]
+    [id, nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen, codigoBarras !== undefined, codigoBarras ?? null]
   );
   return rows[0] || null;
 }

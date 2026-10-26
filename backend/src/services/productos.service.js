@@ -29,6 +29,19 @@ function validarDatosProducto({ nombre, costoBase, porcentajeMargen }, esCreacio
   }
 }
 
+// Código de barras: opcional. '' o null lo borra; undefined no lo cambia.
+// Mismo formato que el CHECK de la base (migración 005).
+function normalizarCodigoBarras(valor) {
+  if (valor === undefined) return undefined;
+  if (valor === null) return null;
+  const codigo = String(valor).trim();
+  if (!codigo) return null;
+  if (!/^[0-9A-Za-z-]{4,32}$/.test(codigo)) {
+    throw new HttpError(400, 'El código de barras solo puede tener números y letras (entre 4 y 32)');
+  }
+  return codigo;
+}
+
 async function listar(filtros) {
   return productosRepo.listar(filtros);
 }
@@ -41,12 +54,12 @@ async function obtener(id) {
 
 async function crear(datos) {
   validarDatosProducto(datos, true);
-  return productosRepo.crear(datos);
+  return productosRepo.crear({ ...datos, codigoBarras: normalizarCodigoBarras(datos.codigoBarras) });
 }
 
 async function actualizar(id, datos) {
   validarDatosProducto(datos, false);
-  const actualizado = await productosRepo.actualizar(id, datos);
+  const actualizado = await productosRepo.actualizar(id, { ...datos, codigoBarras: normalizarCodigoBarras(datos.codigoBarras) });
   if (!actualizado) throw new HttpError(404, 'Producto no encontrado');
   return actualizado;
 }

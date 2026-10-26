@@ -8,6 +8,7 @@ import { Icon } from '../components/ui/Icon';
 import { Loadable } from '../components/ui/States';
 import { Dropdown } from '../components/ui/Dropdown';
 import { ProductModal } from '../components/inventario/ProductModal';
+import { EscanerCodigo } from '../components/ui/EscanerCodigo';
 import { categoriaParaMostrar } from '../lib/catalogo';
 import { ProductoImagen } from '../components/ui/ProductoImagen';
 import { EliminarProductoModal } from '../components/inventario/EliminarProductoModal';
@@ -101,6 +102,8 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
   // undefined = modal cerrado · null = alta · objeto = edición
   const [modal, setModal] = useState(undefined);
   const [aEliminar, setAEliminar] = useState(null);
+  const [escaneando, setEscaneando] = useState(false);
+  const [codigoNuevo, setCodigoNuevo] = useState(''); // para precargarlo en el alta
 
   // Movimientos del mes por producto; sin historial (migración pendiente) queda null.
   const movimientos = useMemo(() => {
@@ -119,7 +122,7 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
     return (state.data ?? []).filter((p) => {
       const cat = categoriaParaMostrar(p) || SIN_CATEGORIA;
       if (categoria && cat !== categoria) return false;
-      return p.nombre.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
+      return p.nombre.toLowerCase().includes(q) || cat.toLowerCase().includes(q) || Boolean(q && p.codigoBarras?.includes(q));
     });
   }, [state.data, query, categoria]);
 
@@ -128,6 +131,25 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
     detalle.reload();
   };
   const vacio = query || categoria ? 'Sin resultados para esa búsqueda.' : 'Todavía no cargaste productos.';
+
+  // Escanear en Stock: un producto → se abre para editar; varios → se filtran;
+  // ninguno → se abre directo el alta con ese código ya cargado.
+  const alEscanear = (codigo) => {
+    setEscaneando(false);
+    const hallados = (state.data ?? []).filter((p) => p.codigoBarras === codigo);
+    if (hallados.length === 1) {
+      setModal(hallados[0]);
+    } else if (hallados.length > 1) {
+      setCategoria('');
+      setQuery(codigo);
+    } else {
+      abrirAlta(codigo);
+    }
+  };
+  const abrirAlta = (codigo = '') => {
+    setCodigoNuevo(codigo);
+    setModal(null);
+  };
 
   return (
     <div className="flex flex-col gap-4 md:gap-5">
@@ -149,7 +171,7 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
           <h1 className="font-display font-bold text-[26px] whitespace-nowrap">Stock {MESES[actual.mes - 1]}</h1>
           <Badge className="bg-[#E3F1EE] text-[#0F5C55]">Editable</Badge>
         </div>
-        <Button onClick={() => setModal(null)} className="shrink-0">
+        <Button onClick={() => abrirAlta()} className="shrink-0">
           <Icon.plus className="w-4 h-4" aria-hidden="true" />
           Agregar producto
         </Button>
@@ -187,11 +209,16 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
             opciones={[{ value: '', label: 'Todas las categorías' }, ...categorias.map((c) => ({ value: c, label: c }))]}
           />
         </div>
-        <Button onClick={() => setModal(null)} className="md:hidden">
+        <Button variant="outline" onClick={() => setEscaneando(true)} aria-label="Buscar con código de barras" className="!px-3 shrink-0">
+          <Icon.barcode className="w-5 h-5" aria-hidden="true" />
+          <span className="hidden md:inline">Escanear</span>
+        </Button>
+        <Button onClick={() => abrirAlta()} className="md:hidden">
           <Icon.plus className="w-4 h-4" aria-hidden="true" />
           Nuevo
         </Button>
       </div>
+
 
       {/* Lista · celular */}
       <Card className="md:hidden px-4 py-1">
@@ -244,12 +271,14 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
         <ProductModal
           producto={modal}
           existentes={state.data ?? []}
+          codigoInicial={modal === null ? codigoNuevo : ''}
           onClose={() => setModal(undefined)}
           onSaved={cambio}
           onEliminar={(p) => { setModal(undefined); setAEliminar(p); }}
         />
       )}
       {aEliminar && <EliminarProductoModal producto={aEliminar} onClose={() => setAEliminar(null)} onDone={cambio} />}
+      {escaneando && <EscanerCodigo titulo="Buscar por código" onDetect={alEscanear} onClose={() => setEscaneando(false)} />}
     </div>
   );
 }

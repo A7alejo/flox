@@ -18,17 +18,17 @@ const obtener = asyncHandler(async (req, res) => {
 });
 
 const crear = asyncHandler(async (req, res) => {
-  const { nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen } = req.body;
+  const { nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen, codigoBarras } = req.body;
   const producto = await productosService.crear({
-    nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen,
+    nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen, codigoBarras,
   });
   res.status(201).json(producto);
 });
 
 const actualizar = asyncHandler(async (req, res) => {
-  const { nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen } = req.body;
+  const { nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen, codigoBarras } = req.body;
   const producto = await productosService.actualizar(req.params.id, {
-    nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen,
+    nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen, codigoBarras,
   });
   res.json(producto);
 });
