@@ -46,7 +46,10 @@ function Shell() {
         <div className="flex-1 min-w-0 flex flex-col">
           <main className="flex-1 px-4 sm:px-6 md:px-10 pt-6 md:pt-8 pb-8 max-w-5xl w-full mx-auto">
             <InstallBanner />
-            <Page partes={invalida ? [] : ruta.partes} />
+            {/* key: al cambiar de sección el contenido entra con un leve desplazamiento */}
+            <div key={pagina} className="animate-page-in">
+              <Page partes={invalida ? [] : ruta.partes} />
+            </div>
           </main>
           <Footer />
         </div>

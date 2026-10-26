@@ -100,12 +100,12 @@ export default function EnviosPage() {
 
       <FormError message={error} />
 
-      <Card className="p-5">
+      <Card className="escalonado p-5">
         <Loadable state={state}>
           {(envios) => {
             const filtered = filter === 'all' ? envios : envios.filter((e) => e.estado === filter);
             return filtered.length === 0 ? (
-              <p className="text-sm text-slate-500 text-center py-8">No hay envíos en este estado.</p>
+              <p className="text-sm text-slate-500 text-center py-8 animate-fade-in">No hay envíos en este estado.</p>
             ) : (
               filtered.map((e) => <EnvioRow key={e.id} envio={e} onChanged={state.reload} onError={setError} />)
             );

@@ -221,11 +221,11 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
 
 
       {/* Lista · celular */}
-      <Card className="md:hidden px-4 py-1">
+      <Card className="escalonado md:hidden px-4 py-1">
         <Loadable state={state}>
           {() =>
             filtered.length === 0 ? (
-              <p className="text-sm text-slate-500 text-center py-8">{vacio}</p>
+              <p className="text-sm text-slate-500 text-center py-8 animate-fade-in">{vacio}</p>
             ) : (
               filtered.map((p) => <ProductRow key={p.id} p={p} onEdit={() => setModal(p)} onDelete={() => setAEliminar(p)} />)
             )
@@ -235,7 +235,7 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
 
       {/* Tabla · escritorio */}
       <Card className="hidden md:block overflow-hidden">
-        <div role="table" aria-label={`Stock de ${MESES[actual.mes - 1]}`}>
+        <div role="table" aria-label={`Stock de ${MESES[actual.mes - 1]}`} className="escalonado">
           <div role="row" className={COLUMNAS + ' px-6 py-3.5 bg-slate-50 text-[13px] font-semibold text-slate-600'}>
             <span role="columnheader">Producto</span>
             <span role="columnheader">Sobró</span>
@@ -247,7 +247,7 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
           <Loadable state={state}>
             {() =>
               filtered.length === 0 ? (
-                <p className="text-sm text-slate-500 text-center py-8 border-t border-slate-100">{vacio}</p>
+                <p className="text-sm text-slate-500 text-center py-8 animate-fade-in border-t border-slate-100">{vacio}</p>
               ) : (
                 filtered.map((p) => (
                   <ProductTableRow

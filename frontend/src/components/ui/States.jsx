@@ -11,7 +11,7 @@ export function Spinner({ className = 'w-6 h-6' }) {
 
 export function LoadingBlock({ label = 'Cargando…' }) {
   return (
-    <div role="status" className="flex items-center justify-center gap-3 py-16 text-sm text-slate-500">
+    <div role="status" className="flex items-center justify-center gap-3 py-16 text-sm text-slate-500 animate-fade-in">
       <Spinner /> {label}
     </div>
   );
@@ -19,7 +19,7 @@ export function LoadingBlock({ label = 'Cargando…' }) {
 
 export function ErrorState({ error, onRetry }) {
   return (
-    <div role="alert" className="flex flex-col items-center text-center gap-3 py-12">
+    <div role="alert" className="flex flex-col items-center text-center gap-3 py-12 animate-pop-in">
       <p className="text-sm font-semibold text-red-700">{error?.message || 'Ocurrió un error inesperado.'}</p>
       {onRetry && <Button variant="outline" onClick={onRetry}>Reintentar</Button>}
     </div>

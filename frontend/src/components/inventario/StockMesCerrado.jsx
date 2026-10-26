@@ -25,7 +25,7 @@ export function StockMesCerrado({ anio, mes, mesActual, onVolver, onAbrirActual 
       <Loadable state={state}>
         {({ totales, productos }) => (
           <>
-            <div className="grid grid-cols-4 gap-2 md:gap-4">
+            <div className="escalonado grid grid-cols-4 gap-2 md:gap-4">
               <Total label={`Sobró de ${mesAnterior(mes)}`} valor={totales.sobro} />
               <Total label="Ingresó" valor={conSigno(totales.ingreso)} className="text-flox-700" />
               <Total label="Vendido" valor={conSigno(-totales.vendido)} className="text-amber-700" />
@@ -47,7 +47,7 @@ export function StockMesCerrado({ anio, mes, mesActual, onVolver, onAbrirActual 
             </div>
 
             <Card className="overflow-hidden">
-              <div role="table" aria-label={`Stock de ${MESES[mes - 1]} por producto`}>
+              <div role="table" aria-label={`Stock de ${MESES[mes - 1]} por producto`} className="escalonado">
                 <div role="row" className="grid grid-cols-[minmax(0,1fr)_repeat(4,2.75rem)] md:grid-cols-[minmax(0,2.4fr)_repeat(4,minmax(0,1fr))] md:gap-4 md:px-6 gap-1 px-3.5 py-2.5 bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-600 text-right">
                   <span role="columnheader" className="text-left">Producto</span>
                   <span role="columnheader">Sobró</span>
@@ -56,7 +56,7 @@ export function StockMesCerrado({ anio, mes, mesActual, onVolver, onAbrirActual 
                   <span role="columnheader">Quedó</span>
                 </div>
                 {productos.length === 0 ? (
-                  <p className="text-sm text-slate-500 text-center py-8">No hubo stock ni movimientos este mes.</p>
+                  <p className="text-sm text-slate-500 text-center py-8 animate-fade-in">No hubo stock ni movimientos este mes.</p>
                 ) : (
                   productos.map((p) => (
                     <div role="row" key={p.id} className="grid grid-cols-[minmax(0,1fr)_repeat(4,2.75rem)] md:grid-cols-[minmax(0,2.4fr)_repeat(4,minmax(0,1fr))] md:gap-4 md:px-6 gap-1 px-3.5 py-3 border-b border-slate-100 last:border-b-0 text-sm text-right items-center tabular-nums">

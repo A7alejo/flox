@@ -107,7 +107,7 @@ export function EscanerCodigo({ titulo = 'Escanear código', continuo = false, o
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-label={titulo} className="fixed inset-0 z-[60] bg-black text-white flex flex-col">
+    <div role="dialog" aria-modal="true" aria-label={titulo} className="fixed inset-0 z-[60] bg-black text-white flex flex-col animate-fade-in">
       <div className="flex items-center justify-between gap-3 px-4 pt-[calc(env(safe-area-inset-top)+12px)] pb-3">
         <h2 className="font-display font-bold text-lg">{titulo}</h2>
         <button

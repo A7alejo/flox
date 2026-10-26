@@ -38,7 +38,7 @@ export function InstallBanner() {
   };
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-flox-100 bg-flox-50 pl-4 pr-1 py-2 mb-5">
+    <div className="flex items-center gap-3 rounded-2xl border border-flox-100 bg-flox-50 pl-4 pr-1 py-2 mb-5 animate-pop-in">
       <div className="flex-1 text-sm text-flox-700">
         {promptEvent ? (
           <span className="font-semibold">Instalá Floxer en tu celular para abrirla como una app.</span>

@@ -25,7 +25,7 @@ export function Button({ children, variant = 'primary', className = '', type = '
     <button
       type={type}
       className={
-        'inline-flex items-center justify-center gap-2 h-12 px-5 rounded-xl font-semibold text-sm min-h-[48px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ' +
+        'inline-flex items-center justify-center gap-2 h-12 px-5 rounded-xl font-semibold text-sm min-h-[48px] transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97] disabled:active:scale-100 disabled:opacity-50 disabled:cursor-not-allowed ' +
         VARIANTS[variant] + ' ' + className
       }
       {...props}
@@ -47,19 +47,22 @@ export function Field({ label, children }) {
 export function FormError({ message }) {
   if (!message) return null;
   return (
-    <div role="alert" className="rounded-xl bg-red-50 text-red-700 px-3.5 py-3 text-sm font-semibold">
+    <div role="alert" className="rounded-xl bg-red-50 text-red-700 px-3.5 py-3 text-sm font-semibold animate-pop-in">
       {message}
     </div>
   );
 }
 
 // Selector de cantidad con botones de 48px (uso con el pulgar).
+const STEP = 'w-12 h-12 rounded-xl border border-slate-200 bg-white font-bold text-xl transition-transform duration-100 active:scale-90 disabled:active:scale-100 disabled:opacity-40';
+
 export function Stepper({ value, onChange, min = 0, max = Infinity, label }) {
   return (
     <div className="flex items-center gap-2" role="group" aria-label={label}>
-      <button type="button" aria-label="Restar uno" disabled={value <= min} onClick={() => onChange(Math.max(min, value - 1))} className="w-12 h-12 rounded-xl border border-slate-200 bg-white font-bold text-xl disabled:opacity-40">−</button>
-      <span className="font-display font-extrabold text-xl w-9 text-center tabular-nums" aria-live="polite">{value}</span>
-      <button type="button" aria-label="Sumar uno" disabled={value >= max} onClick={() => onChange(Math.min(max, value + 1))} className="w-12 h-12 rounded-xl border border-slate-200 bg-white font-bold text-xl disabled:opacity-40">+</button>
+      <button type="button" aria-label="Restar uno" disabled={value <= min} onClick={() => onChange(Math.max(min, value - 1))} className={STEP}>−</button>
+      {/* key: al cambiar el número se vuelve a montar y "late" una vez */}
+      <span key={value} className="font-display font-extrabold text-xl w-9 text-center tabular-nums animate-bump" aria-live="polite">{value}</span>
+      <button type="button" aria-label="Sumar uno" disabled={value >= max} onClick={() => onChange(Math.min(max, value + 1))} className={STEP}>+</button>
     </div>
   );
 }
@@ -74,7 +77,7 @@ export function ChipGroup({ options, value, onChange, label }) {
           type="button"
           onClick={() => onChange(o.value)}
           aria-pressed={value === o.value}
-          className={'h-12 px-4 rounded-full border text-sm font-semibold ' + (value === o.value ? 'bg-flox-600 border-flox-600 text-white' : 'bg-white border-slate-200 text-slate-700')}
+          className={'h-12 px-4 rounded-full border text-sm font-semibold transition-[color,background-color,border-color,transform] duration-150 active:scale-95 ' + (value === o.value ? 'bg-flox-600 border-flox-600 text-white' : 'bg-white border-slate-200 text-slate-700')}
         >
           {o.label}
         </button>

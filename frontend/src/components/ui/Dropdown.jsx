@@ -15,6 +15,7 @@ export function Dropdown({ value, onChange, placeholder = 'Seleccionar', grupos,
   const seleccionada = planas.find((o) => o.value === value);
 
   const [abierto, setAbierto] = useState(false);
+  const [cerrando, setCerrando] = useState(false); // animación de salida en curso
   const [activo, setActivo] = useState(-1); // índice en `planas` resaltado con el teclado
   const [pos, setPos] = useState(null);
   const botonRef = useRef(null);
@@ -27,7 +28,8 @@ export function Dropdown({ value, onChange, placeholder = 'Seleccionar', grupos,
     setAbierto(true);
   };
   const cerrar = (devolverFoco = true) => {
-    setAbierto(false);
+    setCerrando(true);
+    setTimeout(() => { setAbierto(false); setCerrando(false); }, 150);
     if (devolverFoco) botonRef.current?.focus();
   };
   const elegir = (op) => {
@@ -150,7 +152,9 @@ export function Dropdown({ value, onChange, placeholder = 'Seleccionar', grupos,
           id={listId}
           role="listbox"
           style={pos ? { position: 'fixed', ...pos } : { position: 'fixed', top: 0, left: 0, visibility: 'hidden' }}
-          className="z-50 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg shadow-slate-900/10"
+          className={'z-50 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg shadow-slate-900/10 ' +
+            (pos?.bottom !== undefined ? 'origin-bottom ' : 'origin-top ') +
+            (cerrando ? 'animate-pop-out pointer-events-none' : pos ? 'animate-pop-in' : '')}
         >
           {lista.map((g, gi) => (
             <div key={g.label ?? gi} role={g.label ? 'group' : undefined} aria-label={g.label ?? undefined} className={gi > 0 ? 'mt-1' : ''}>

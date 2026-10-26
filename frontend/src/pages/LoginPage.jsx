@@ -32,7 +32,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10 pt-[max(2.5rem,env(safe-area-inset-top))]">
-      <div className="w-full max-w-sm flex flex-col gap-6">
+      <div className="escalonado w-full max-w-sm flex flex-col gap-6">
         <div className="flex flex-col items-center gap-3">
           <div
             className="w-14 h-14 rounded-2xl bg-flox-600 text-white font-display font-extrabold text-2xl flex items-center justify-center"

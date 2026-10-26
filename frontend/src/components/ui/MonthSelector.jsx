@@ -23,7 +23,8 @@ export function MonthSelector({ anio, mes, onChange, compact = false }) {
         <Icon.chevronLeft className={compact ? 'w-4 h-4' : 'w-5 h-5'} />
       </button>
       <div className="text-center" aria-live="polite">
-        <div className={compact ? 'text-sm font-semibold whitespace-nowrap min-w-[8.5rem]' : 'font-display font-bold text-lg'}>
+        {/* key: al cambiar de mes el nombre se reemplaza con un fundido */}
+        <div key={anio * 12 + mes} className={(compact ? 'text-sm font-semibold whitespace-nowrap min-w-[8.5rem]' : 'font-display font-bold text-lg') + ' animate-fade-in'}>
           {MESES[mes]} {anio}
         </div>
         {!compact && esActual && <div className="text-xs text-slate-500">Mes actual</div>}

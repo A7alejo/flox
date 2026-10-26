@@ -127,15 +127,15 @@ export function SaleModal({ onClose, onDone }) {
   return (
     <Modal title="Registrar venta" onClose={onClose} footer={footer}>
       {step === 'select' && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 animate-pop-in">
           <span className="text-xs font-semibold text-slate-500">Paso 1 · Elegí los productos y cantidades</span>
           <Button variant="outline" onClick={() => { setAviso(null); setElegir(null); setEscaneando(true); }} disabled={!productos.data}>
             <Icon.barcode className="w-5 h-5" aria-hidden="true" />
             Escanear productos
           </Button>
-          {aviso && !elegir && <p className="text-sm text-slate-600" aria-live="polite">{aviso}</p>}
+          {aviso && !elegir && <p key={aviso} className="text-sm text-slate-600 animate-fade-in" aria-live="polite">{aviso}</p>}
           {elegir && (
-            <Card className="p-3 flex flex-col gap-2">
+            <Card className="p-3 flex flex-col gap-2 animate-pop-in">
               <span className="text-sm font-semibold">Ese código está en varios productos. ¿Cuál es?</span>
               {elegir.map((p) => (
                 <Button key={p.id} variant="outline" onClick={() => { sumarUno(p); setElegir(null); }} className="justify-start text-left">
@@ -174,7 +174,7 @@ export function SaleModal({ onClose, onDone }) {
       )}
 
       {step === 'confirm' && (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 animate-pop-in">
           <span className="text-xs font-semibold text-slate-500">Paso 2 · Confirmá la venta</span>
 
           <Card className="p-4 flex flex-col gap-2">
@@ -216,7 +216,7 @@ export function SaleModal({ onClose, onDone }) {
       )}
 
       {step === 'success' && resultado && (
-        <div className="flex flex-col items-center text-center gap-3 py-6">
+        <div className="escalonado flex flex-col items-center text-center gap-3 py-6">
           <div className={'w-16 h-16 rounded-full flex items-center justify-center ' + (resultado.venta.estado === 'pagada' ? 'bg-emerald-100' : 'bg-orange-100')}>
             <Icon.check className={'w-8 h-8 ' + (resultado.venta.estado === 'pagada' ? 'text-emerald-700' : 'text-orange-700')} />
           </div>

@@ -34,7 +34,7 @@ function Resumen({ usuarios }) {
     { label: 'Desactivados', valor: usuarios.filter((u) => !u.activo).length },
   ];
   return (
-    <div className="grid grid-cols-3 gap-3 sm:gap-4">
+    <div className="escalonado grid grid-cols-3 gap-3 sm:gap-4">
       {items.map((i) => (
         <Card key={i.label} className="p-3.5 sm:p-5">
           <div className="text-xs sm:text-sm text-slate-500">{i.label}</div>
@@ -326,7 +326,7 @@ export default function UsuariosPage() {
             <Resumen usuarios={usuarios} />
 
             {/* Celular: tarjetas */}
-            <div className="flex flex-col gap-3 md:hidden">
+            <div className="escalonado flex flex-col gap-3 md:hidden">
               {usuarios.map((u) => (
                 <Card key={u.id} className={'p-4 flex flex-col gap-3 ' + (u.activo ? '' : 'opacity-75')}>
                   <div className="flex items-start justify-between gap-3">
@@ -356,7 +356,7 @@ export default function UsuariosPage() {
                     <th className="px-5 py-4 font-semibold text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="escalonado">
                   {usuarios.map((u) => (
                     <tr key={u.id} className={'border-b border-slate-100 last:border-b-0 ' + (u.activo ? '' : 'opacity-75')}>
                       <td className="px-5 py-3 font-semibold">{u.nombre}</td>

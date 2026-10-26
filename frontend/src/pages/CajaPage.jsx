@@ -70,7 +70,7 @@ function VentasPendientes({ state, onCobrar }) {
 
   const totalPendiente = state.data.reduce((s, v) => s + v.total, 0);
   return (
-    <Card className="p-5 border-orange-200">
+    <Card className="escalonado p-5 border-orange-200">
       <div className="flex items-center justify-between gap-3 mb-1">
         <h3 className="font-semibold">Ventas pendientes de cobro</h3>
         <span className="text-sm font-bold text-orange-700 tabular-nums">{money(totalPendiente)}</span>
@@ -138,7 +138,7 @@ export default function CajaPage() {
           const nombreMes = MESES[periodo.mes].toLowerCase();
           return (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              <div className="escalonado grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 <Card className="md:col-span-2 p-6 flex flex-col gap-4">
                   <div className="flex flex-wrap items-end justify-between gap-3">
                     <div>
@@ -172,10 +172,10 @@ export default function CajaPage() {
 
               <VentasPendientes state={pendientes} onCobrar={setACobrar} />
 
-              <Card className="p-5">
+              <Card className="escalonado p-5">
                 <h3 className="font-semibold mb-1">Historial de {nombreMes}</h3>
                 {movimientos.length === 0 ? (
-                  <p className="text-sm text-slate-500 text-center py-8">No hay movimientos en {nombreMes} {periodo.anio}.</p>
+                  <p className="text-sm text-slate-500 text-center py-8 animate-fade-in">No hay movimientos en {nombreMes} {periodo.anio}.</p>
                 ) : (
                   movimientos.map((m) => (
                     <MovementRow

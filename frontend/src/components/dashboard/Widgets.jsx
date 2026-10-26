@@ -71,8 +71,10 @@ export function FinanceChart({ data }) {
           const active = i === idx;
           return (
             <g key={d.dia}>
-              <rect x={cx - barW / 2} y={midY - hIn} width={barW} height={hIn} rx="3" fill={VIZ.ingresos} opacity={active ? 1 : 0.88} />
-              <rect x={cx - barW / 2} y={midY} width={barW} height={hEg} rx="3" fill={VIZ.egresos} opacity={active ? 1 : 0.88} />
+              <rect x={cx - barW / 2} y={midY - hIn} width={barW} height={hIn} rx="3" fill={VIZ.ingresos} opacity={active ? 1 : 0.88}
+                className="animate-grow-y [transform-box:fill-box] origin-bottom" style={{ animationDelay: Math.min(idx * 12, 200) + 'ms' }} />
+              <rect x={cx - barW / 2} y={midY} width={barW} height={hEg} rx="3" fill={VIZ.egresos} opacity={active ? 1 : 0.88}
+                className="animate-grow-y [transform-box:fill-box] origin-top" style={{ animationDelay: Math.min(idx * 12, 200) + 'ms' }} />
               {(n - 1 - idx) % labelEvery === 0 && (
                 <text x={cx} y={H - 2} textAnchor="middle" className="fill-slate-500 text-[10px] font-semibold">{formatDia(d.dia, corto)}</text>
               )}
@@ -142,7 +144,8 @@ export function PaymentDonut({ data }) {
               strokeDasharray={dash + ' ' + (circumference - dash)}
               strokeDashoffset={-cumulative}
               transform={'rotate(-90 ' + CX + ' ' + CY + ')'}
-              style={{ transition: 'stroke-width 120ms' }}
+              style={{ transition: 'stroke-width 120ms', animationDelay: idx * 60 + 'ms' }}
+              className="animate-dibujar"
               tabIndex="0"
               role="button"
               aria-label={(MEDIO_PAGO_LABEL[d.medioPago] || 'Otro') + ': ' + money(d.total) + ', ' + Math.round(frac * 100) + ' por ciento'}
@@ -178,12 +181,12 @@ export function TopProductsList({ items }) {
   if (items.length === 0) return <p className="text-sm text-slate-500 py-6">No hay ventas en este mes.</p>;
   const max = Math.max(...items.map((i) => i.unidades));
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="escalonado flex flex-col gap-3">
       {items.map((p) => (
         <li key={p.id} className="flex items-center gap-3">
           <span className="w-32 sm:w-40 shrink-0 text-sm font-medium text-slate-700 truncate">{p.nombre}</span>
           <span className="flex-1 h-3 rounded-full bg-slate-100 overflow-hidden" role="img" aria-label={p.nombre + ': ' + p.unidades + ' unidades vendidas'}>
-            <span className="block h-full rounded-full bg-flox-600" style={{ width: (p.unidades / max) * 100 + '%' }}></span>
+            <span className="block h-full rounded-full bg-flox-600 origin-left animate-grow-x" style={{ width: (p.unidades / max) * 100 + '%' }}></span>
           </span>
           <span className="w-8 shrink-0 text-right text-sm font-bold tabular-nums" aria-hidden="true">{p.unidades}</span>
         </li>

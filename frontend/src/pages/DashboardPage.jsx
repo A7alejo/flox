@@ -83,14 +83,14 @@ export default function DashboardPage() {
 
           return (
             <>
-              <section aria-label="Indicadores principales" className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <section aria-label="Indicadores principales" className="escalonado grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <StatTile label="Saldo total" value={money(resumen.balance)} delta={pctChange(resumen.balance, saldoAnterior)} goodWhenUp={true} />
                 <StatTile label={`Ingresos de ${nombreMes}`} value={money(mes.totalIngresos)} delta={pctChange(mes.totalIngresos, mesAnterior.totalIngresos)} goodWhenUp={true} />
                 <StatTile label={`Egresos de ${nombreMes}`} value={money(mes.totalEgresos)} delta={pctChange(mes.totalEgresos, mesAnterior.totalEgresos)} goodWhenUp={false} />
                 <StatTile label="Alertas de stock" value={String(resumen.alertasStock.length)} hint="productos para reponer" />
               </section>
 
-              <section aria-label="Gráficos financieros" className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
+              <section aria-label="Gráficos financieros" className="escalonado grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
                 <FinanceCard />
                 {/* self-start: alto según su contenido, no estirada al del gráfico de al lado */}
                 <Card className="lg:col-span-2 lg:self-start p-5 md:p-6 flex flex-col gap-4">
@@ -99,7 +99,7 @@ export default function DashboardPage() {
                 </Card>
               </section>
 
-              <section aria-label="Productos y stock" className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
+              <section aria-label="Productos y stock" className="escalonado grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
                 <Card className="lg:col-span-2 p-5 md:p-6 flex flex-col gap-4">
                   <h2 className="font-semibold">Top 5 productos más vendidos</h2>
                   <TopProductsList items={top} />

@@ -62,9 +62,9 @@ export function BottomNav({ active, onChange, usuario }) {
             type="button"
             onClick={() => onChange(item.id)}
             aria-current={isActive ? 'page' : undefined}
-            className={'flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[56px] py-2 text-[11px] font-semibold ' + (isActive ? 'text-flox-600' : 'text-slate-500')}
+            className={'flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[56px] py-2 text-[11px] font-semibold transition-[color,transform] duration-150 active:scale-90 ' + (isActive ? 'text-flox-600' : 'text-slate-500')}
           >
-            <item.icon className="w-5 h-5" aria-hidden="true" />
+            <item.icon className={'w-5 h-5 transition-transform duration-200 ' + (isActive ? '-translate-y-0.5 scale-110' : '')} aria-hidden="true" />
             {item.mobileLabel}
           </button>
         );
