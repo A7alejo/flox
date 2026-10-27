@@ -2,11 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Flox — tema claro; tokens base para el fondo y el chrome del shell (oscuro: theme-dark.css) */
+/* Flox — tema claro; tokens base para el fondo y el chrome del shell (oscuro: theme-dark.css).
+   Fondo "espuma": gris azulado frío, para que las tarjetas blancas se lean como etiquetas. */
 :root {
   color-scheme: light;
-  --bg: #F8FAFC;
-  --accent: #0D9488;
+  --bg: #EDF2F7;
+  --accent: #0B7C89;
 }
 
 html {
@@ -17,14 +18,17 @@ html {
 body {
   margin: 0;
   background: var(--bg);
-  color: #0F172A;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #16203A;
+  font-family: 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   /* En la PWA instalada no queremos el "rebote" que arrastra la página entera. */
   overscroll-behavior-y: none;
 }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
+::-webkit-scrollbar-thumb { background: #C3CEDB; border-radius: 999px; }
+
+/* Baloo 2 es alta: los títulos con leading ajustado no se recortan. */
+.font-display { letter-spacing: -0.005em; }
 
 input[type="range"] { accent-color: var(--accent); }
 

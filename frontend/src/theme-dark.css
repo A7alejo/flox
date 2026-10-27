@@ -8,23 +8,25 @@
 
 html.dark {
   color-scheme: dark; /* barras de scroll, selects y teclados nativos en oscuro */
-  --bg: #0B1215;
-  --accent: #2DD4BF;
+  /* Azul noche: la misma paleta de la etiqueta Flox, en oscuro. */
+  --bg: #0A1226;
+  --accent: #3CC9D0;
 
-  --d-superficie: #141D21;    /* tarjetas, header, barras (antes blanco) */
-  --d-superficie-2: #1B262B;  /* fondos suaves, hover */
-  --d-hundido: #10191D;       /* fondos apenas más oscuros que la tarjeta */
-  --d-borde: #26343A;
-  --d-borde-fuerte: #34464D;
-  --d-texto: #E6EEF0;
-  --d-texto-2: #C2CFD3;
-  --d-texto-suave: #93A4AB;
-  --d-texto-tenue: #6F8288;
-  --d-acento: #2DD4BF;
-  --d-acento-texto: #5EEAD4;
-  --d-acento-suave: #0F2A28;
-  --d-acento-suave-2: #12332F;
-  --d-acento-borde: #1D4A45;
+  --d-banda: #13214A;         /* franja de marca (header, pie, login) */
+  --d-superficie: #111B33;    /* tarjetas, barras (antes blanco) */
+  --d-superficie-2: #18243F;  /* fondos suaves, hover */
+  --d-hundido: #0D162B;       /* fondos apenas más oscuros que la tarjeta */
+  --d-borde: #223050;
+  --d-borde-fuerte: #30406A;
+  --d-texto: #E8EDF7;
+  --d-texto-2: #C3CCDD;
+  --d-texto-suave: #94A1BA;
+  --d-texto-tenue: #6D7A95;
+  --d-acento: #3CC9D0;
+  --d-acento-texto: #7FDDE2;
+  --d-acento-suave: #0D2A38;
+  --d-acento-suave-2: #103341;
+  --d-acento-borde: #1B4A5A;
 }
 
 .dark body { color: var(--d-texto); }
@@ -46,6 +48,16 @@ html.dark {
 .dark .hover\:bg-slate-100:hover { background-color: var(--d-superficie-2); }
 .dark .hover\:bg-flox-50:hover { background-color: var(--d-acento-suave); }
 .dark .disabled\:bg-slate-50:disabled { background-color: var(--d-hundido); }
+
+/* ---------- Marca (franja azul, logo, pie) ---------- */
+.dark .bg-tinta { background-color: var(--d-banda); }
+.dark .fill-tinta { fill: var(--d-banda); }
+.dark .text-tinta { color: var(--d-texto); }
+
+/* Botón deshabilitado */
+.dark .disabled\:bg-slate-200:disabled { background-color: var(--d-superficie-2); }
+.dark .disabled\:text-slate-500:disabled { color: var(--d-texto-tenue); }
+.dark .disabled\:border-slate-200:disabled { border-color: var(--d-borde); }
 
 /* ---------- Bordes ---------- */
 .dark .border-slate-100,

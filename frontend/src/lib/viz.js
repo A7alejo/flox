@@ -3,7 +3,7 @@
 // separarse bajo daltonismo, y las paletas categórica y de estado también están
 // verificadas por contraste.
 export const VIZ = {
-  ingresos: '#2a78d6',
+  ingresos: '#0B7C89',
   egresos: '#e34948',
   baseline: '#c3c2b7',
   grid: '#e1e0d9',

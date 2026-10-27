@@ -25,7 +25,7 @@ export function Button({ children, variant = 'primary', className = '', type = '
     <button
       type={type}
       className={
-        'inline-flex items-center justify-center gap-2 h-12 px-5 rounded-xl font-semibold text-sm min-h-[48px] transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97] disabled:active:scale-100 disabled:opacity-50 disabled:cursor-not-allowed ' +
+        'inline-flex items-center justify-center gap-2 h-12 px-5 rounded-xl font-semibold text-sm min-h-[48px] transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97] disabled:active:scale-100 disabled:bg-slate-200 disabled:text-slate-500 disabled:border-slate-200 disabled:cursor-not-allowed ' +
         VARIANTS[variant] + ' ' + className
       }
       {...props}

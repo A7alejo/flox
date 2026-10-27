@@ -169,7 +169,7 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
             ← Todos los meses
           </button>
           <h1 className="font-display font-bold text-[26px] whitespace-nowrap">Stock {MESES[actual.mes - 1]}</h1>
-          <Badge className="bg-[#E3F1EE] text-[#0F5C55]">Editable</Badge>
+          <Badge className="bg-flox-50 text-flox-700">Editable</Badge>
         </div>
         <Button onClick={() => abrirAlta()} className="shrink-0">
           <Icon.plus className="w-4 h-4" aria-hidden="true" />

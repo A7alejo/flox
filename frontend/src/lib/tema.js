@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 
 const CLAVE = 'floxer-tema';
 const OPCIONES = ['claro', 'oscuro', 'auto'];
-const COLOR_BARRA = { claro: '#0D9488', oscuro: '#10191D' };
+const COLOR_BARRA = { claro: '#16285A', oscuro: '#13214A' };
 
 const mediaOscuro = () => window.matchMedia('(prefers-color-scheme: dark)');
 

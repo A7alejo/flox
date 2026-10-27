@@ -66,12 +66,12 @@ export function StockCajones({ actual, productos, meses, onAbrir }) {
       <button
         type="button"
         onClick={abrirActual}
-        className="hidden md:flex text-left items-center justify-between gap-6 px-8 py-7 rounded-[18px] bg-[#0F3D3A] text-white hover:bg-[#0D3532] focus:outline-none focus-visible:ring-2 focus-visible:ring-flox-600 focus-visible:ring-offset-2"
+        className="hidden md:flex text-left items-center justify-between gap-6 px-8 py-7 rounded-[18px] bg-tinta text-white hover:bg-[#1D3470] focus:outline-none focus-visible:ring-2 focus-visible:ring-flox-600 focus-visible:ring-offset-2"
       >
         <div className="flex flex-col">
-          <span className="text-[13px] tracking-[.08em] uppercase text-[#A8D8CF] font-semibold">Mes actual · editable</span>
+          <span className="text-sm text-[#9FE3E7] font-bold">Mes en curso, se puede editar</span>
           <span className="font-display font-bold text-[28px] mt-1.5">Stock {nombreMes}</span>
-          <span className="text-sm text-[#D9F0EC] mt-2">
+          <span className="text-sm text-white/80 mt-2">
             Arrancó con lo que sobró de {mesAnterior(actual.mes)}: {resumenActual ? resumenActual.sobro + ' u.' : '—'}
           </span>
         </div>
@@ -170,7 +170,7 @@ function NumeroOscuro({ valor, label, className = '' }) {
   return (
     <div>
       <div className={'font-display font-bold text-[26px] tabular-nums ' + className}>{valor}</div>
-      <div className="text-[13px] text-[#A8D8CF]">{label}</div>
+      <div className="text-[13px] text-[#9FE3E7]">{label}</div>
     </div>
   );
 }

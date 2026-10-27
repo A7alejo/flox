@@ -4,7 +4,25 @@ export default {
   theme: {
     extend: {
       colors: {
-        flox: { 50: '#F0FDFA', 100: '#CCFBF1', 600: '#0D9488', 700: '#0F766E' },
+        // Paleta "etiqueta Flox": agua (turquesa de la etiqueta, acciones), tinta
+        // (azul marino del logo), ola (turquesa brillante, solo decorativo) y
+        // grises con un toque de azul en lugar de los neutros de Tailwind.
+        flox: { 50: '#E3F4F5', 100: '#BFE6EA', 600: '#0B7C89', 700: '#08626D' },
+        tinta: '#16285A',
+        ola: '#33C2C9',
+        lavanda: '#6B4FBB',
+        slate: {
+          50: '#F5F7FA',
+          100: '#EDF1F6',
+          200: '#DCE3EC',
+          300: '#C3CEDB',
+          400: '#8E9BB0',
+          500: '#5E6C84',
+          600: '#46536B',
+          700: '#343F55',
+          800: '#232C40',
+          900: '#16203A',
+        },
       },
       // Animaciones cortas (150–250 ms). Las de entrada usan "backwards": al terminar
       // no dejan un transform aplicado (rompería los position: fixed de adentro).
@@ -35,8 +53,10 @@ export default {
         dibujar: 'dibujar 250ms ease-out backwards',
       },
       fontFamily: {
-        display: ['Sora', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        // Baloo 2: redondeada y gruesa como el logo de Flox (títulos y números).
+        // Atkinson Hyperlegible: pensada para leerse fácil (textos).
+        display: ['"Baloo 2"', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['"Atkinson Hyperlegible"', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
     },
   },

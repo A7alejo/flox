@@ -1,4 +1,5 @@
 import { Icon } from '../ui/Icon';
+import { Marca } from '../ui/Marca';
 
 export const NAV_ITEMS = [
   { id: 'dashboard', label: 'Inicio', mobileLabel: 'Inicio', icon: Icon.home },
@@ -23,10 +24,10 @@ const LABEL = 'whitespace-nowrap opacity-0 transition-opacity duration-150 group
 // contenido en vez de taparlo. Cerrar sesión vive en el Header.
 export function Sidebar({ active, onChange, usuario }) {
   return (
-    <aside className="group hidden md:block shrink-0 sticky top-[72px] self-start h-[calc(100vh-72px)] w-[72px] hover:w-[232px] has-[:focus-visible]:w-[232px] transition-[width] duration-200 overflow-hidden py-5 px-3 border-r border-[#DDE5E1] bg-white">
+    <aside className="group hidden md:block shrink-0 sticky top-[72px] self-start h-[calc(100vh-72px)] w-[72px] hover:w-[232px] has-[:focus-visible]:w-[232px] transition-[width] duration-200 overflow-hidden py-5 px-3 border-r border-slate-200 bg-white">
       <div className="flex items-center gap-3 px-1.5 pb-5">
-        <div className="w-9 h-9 shrink-0 rounded-[10px] bg-[#0F766E] text-white font-display font-bold text-lg flex items-center justify-center" aria-hidden="true">F</div>
-        <span className={'font-display font-bold text-xl text-[#1F2A2E] ' + LABEL}>Floxer</span>
+        <Marca className="w-9 h-9" />
+        <span className={'font-display font-extrabold text-2xl leading-none pt-1 text-tinta ' + LABEL}>Floxer</span>
       </div>
       <nav aria-label="Navegación principal" className="flex flex-col gap-1">
         {navItemsPara(usuario).map((item) => {
@@ -39,7 +40,7 @@ export function Sidebar({ active, onChange, usuario }) {
               aria-current={isActive ? 'page' : undefined}
               aria-label={item.label}
               title={item.label}
-              className={'flex items-center gap-3 h-11 px-3.5 rounded-xl text-[15px] transition-colors ' + (isActive ? 'bg-[#E3F1EE] text-[#0F3D3A] font-semibold' : 'text-[#4B5B5F] font-medium hover:bg-slate-50')}
+              className={'flex items-center gap-3 h-11 px-3.5 rounded-xl text-[15px] transition-colors ' + (isActive ? 'bg-flox-50 text-tinta font-bold' : 'text-slate-600 hover:bg-slate-100')}
             >
               <item.icon className="w-5 h-5 shrink-0" aria-hidden="true" />
               <span className={LABEL}>{item.label}</span>
@@ -62,9 +63,12 @@ export function BottomNav({ active, onChange, usuario }) {
             type="button"
             onClick={() => onChange(item.id)}
             aria-current={isActive ? 'page' : undefined}
-            className={'flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[56px] py-2 text-[11px] font-semibold transition-[color,transform] duration-150 active:scale-90 ' + (isActive ? 'text-flox-600' : 'text-slate-500')}
+            className={'flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[56px] py-2 text-[11px] font-semibold transition-[color,transform] duration-150 active:scale-90 ' + (isActive ? 'text-flox-700' : 'text-slate-500')}
           >
-            <item.icon className={'w-5 h-5 transition-transform duration-200 ' + (isActive ? '-translate-y-0.5 scale-110' : '')} aria-hidden="true" />
+            {/* La sección activa lleva el ícono dentro de una píldora turquesa clara */}
+            <span className={'px-4 py-1 rounded-full transition-colors duration-200 ' + (isActive ? 'bg-flox-50' : '')}>
+              <item.icon className={'w-5 h-5 transition-transform duration-200 ' + (isActive ? 'scale-110' : '')} aria-hidden="true" />
+            </span>
             {item.mobileLabel}
           </button>
         );

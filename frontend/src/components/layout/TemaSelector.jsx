@@ -71,7 +71,7 @@ export function TemaSelector() {
         aria-label="Apariencia"
         aria-haspopup="true"
         aria-expanded={abierto}
-        className="min-h-[44px] min-w-[44px] rounded-xl border border-[#B8C6C1] bg-white flex items-center justify-center hover:bg-slate-50 transition-transform duration-150 active:scale-90"
+        className="min-h-[44px] min-w-[44px] rounded-xl border border-white/30 text-white flex items-center justify-center hover:bg-white/10 transition-transform duration-150 active:scale-90"
       >
         <Actual className="w-5 h-5" aria-hidden="true" />
       </button>
