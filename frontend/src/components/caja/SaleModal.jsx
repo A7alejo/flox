@@ -8,7 +8,6 @@ import { Modal } from '../ui/Modal';
 import { Button, Card, ChipGroup, Field, FormError, Stepper, inputClass } from '../ui/Primitives';
 import { Icon } from '../ui/Icon';
 import { Loadable } from '../ui/States';
-import { EscanerCodigo } from '../ui/EscanerCodigo';
 
 const ESTADOS = [
   { value: 'pagada', label: 'Cobrada ahora' },
@@ -28,9 +27,6 @@ export function SaleModal({ onClose, onDone }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [resultado, setResultado] = useState(null);
-  const [escaneando, setEscaneando] = useState(false);
-  const [aviso, setAviso] = useState(null);
-  const [elegir, setElegir] = useState(null); // productos que comparten el código escaneado
 
   const lista = productos.data ?? [];
   const lineas = lista
@@ -38,37 +34,6 @@ export function SaleModal({ onClose, onDone }) {
     .map((p) => ({ producto: p, cantidad: cantidades[p.id] }));
   const total = lineas.reduce((s, l) => s + l.producto.precioVenta * l.cantidad, 0);
   const unidades = lineas.reduce((s, l) => s + l.cantidad, 0);
-
-  // Suma 1 unidad del producto (sin pasarse del stock). Devuelve el texto para el escáner.
-  const sumarUno = (p) => {
-    const actual = cantidades[p.id] ?? 0;
-    if (actual >= p.stockActual) {
-      const texto = p.stockActual === 0 ? `Sin stock de ${p.nombre}` : `No hay más stock de ${p.nombre} (${p.stockActual})`;
-      setAviso(texto);
-      return texto;
-    }
-    setCantidades((prev) => ({ ...prev, [p.id]: (prev[p.id] ?? 0) + 1 }));
-    const texto = `Agregado: ${p.nombre} · ${actual + 1} en la venta`;
-    setAviso(texto);
-    return texto;
-  };
-
-  // Cada lectura del escáner suma 1 unidad del producto con ese código.
-  // Un código desconocido solo avisa: la venta y el escáner siguen como estaban.
-  const alEscanear = (codigo) => {
-    const hallados = lista.filter((p) => p.codigoBarras === codigo);
-    if (hallados.length === 0) {
-      const texto = `El código ${codigo} no está cargado. No se agregó nada; seguí con la venta y cargalo después en Stock.`;
-      setAviso(texto);
-      return texto;
-    }
-    if (hallados.length > 1) {
-      setEscaneando(false);
-      setElegir(hallados);
-      return null;
-    }
-    return sumarUno(hallados[0]);
-  };
 
   const confirmar = async () => {
     setSaving(true);
@@ -99,8 +64,6 @@ export function SaleModal({ onClose, onDone }) {
     setMedio('efectivo');
     setCliente('');
     setResultado(null);
-    setAviso(null);
-    setElegir(null);
     setStep('select');
   };
 
@@ -129,21 +92,6 @@ export function SaleModal({ onClose, onDone }) {
       {step === 'select' && (
         <div className="flex flex-col gap-3 animate-pop-in">
           <span className="text-xs font-semibold text-slate-500">Paso 1 · Elegí los productos y cantidades</span>
-          <Button variant="outline" onClick={() => { setAviso(null); setElegir(null); setEscaneando(true); }} disabled={!productos.data}>
-            <Icon.barcode className="w-5 h-5" aria-hidden="true" />
-            Escanear productos
-          </Button>
-          {aviso && !elegir && <p key={aviso} className="text-sm text-slate-600 animate-fade-in" aria-live="polite">{aviso}</p>}
-          {elegir && (
-            <Card className="p-3 flex flex-col gap-2 animate-pop-in">
-              <span className="text-sm font-semibold">Ese código está en varios productos. ¿Cuál es?</span>
-              {elegir.map((p) => (
-                <Button key={p.id} variant="outline" onClick={() => { sumarUno(p); setElegir(null); }} className="justify-start text-left">
-                  {p.nombre}
-                </Button>
-              ))}
-            </Card>
-          )}
           <Loadable state={productos}>
             {(items) =>
               items.length === 0 ? (
@@ -239,9 +187,6 @@ export function SaleModal({ onClose, onDone }) {
             <Button variant="ghost" onClick={onClose}>Volver a Caja</Button>
           </div>
         </div>
-      )}
-      {escaneando && (
-        <EscanerCodigo titulo="Escanear productos" continuo onDetect={alEscanear} onClose={() => setEscaneando(false)} />
       )}
     </Modal>
   );
