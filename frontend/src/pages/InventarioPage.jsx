@@ -41,21 +41,26 @@ function Acciones({ p, onEdit, onDelete }) {
   );
 }
 
-// Fila de la lista (celular).
-function ProductRow({ p, onEdit, onDelete }) {
+// Fila de la lista (celular): toda la fila es un botón que abre la edición
+// (ahí también está "Eliminar"). Sin botones sueltos: el nombre y el precio
+// entran completos y no se borra nada por un toque de más.
+function ProductRow({ p, onEdit }) {
   const s = stockStatus(p);
   return (
-    <div className="flex items-center gap-3 py-3 border-t border-slate-100 first:border-t-0">
+    <button
+      type="button"
+      onClick={onEdit}
+      aria-label={'Editar ' + p.nombre}
+      className="w-full flex items-center gap-3 py-3 border-t border-slate-100 first:border-t-0 text-left active:bg-slate-50 transition-colors"
+    >
       <ProductoImagen nombre={p.nombre} />
-      <div className="flex-1 min-w-0 flex flex-col gap-1">
-        <div className="font-semibold text-sm leading-snug line-clamp-2">{p.nombre}</div>
-        <div className="flex items-center gap-2 min-w-0">
-          <Badge className={s.classes}>{s.label}</Badge>
-          <span className="text-xs text-slate-500 truncate">{categoriaParaMostrar(p) || SIN_CATEGORIA} · {money(p.precioVenta)}</span>
-        </div>
+      <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+        <span className="font-semibold text-[15px] leading-snug">{p.nombre}</span>
+        <span className="text-[15px] font-bold text-flox-700 tabular-nums">{money(p.precioVenta)}</span>
       </div>
-      <Acciones p={p} onEdit={onEdit} onDelete={onDelete} />
-    </div>
+      <Badge className={'!h-8 !px-3 !text-sm ' + s.classes}>{s.label}</Badge>
+      <Icon.chevronRight className="w-5 h-5 text-slate-400 shrink-0 -mr-1" aria-hidden="true" />
+    </button>
   );
 }
 
@@ -227,7 +232,7 @@ function StockMesActual({ state, actual, resumen, onVolver, onCambio }) {
             filtered.length === 0 ? (
               <p className="text-sm text-slate-500 text-center py-8 animate-fade-in">{vacio}</p>
             ) : (
-              filtered.map((p) => <ProductRow key={p.id} p={p} onEdit={() => setModal(p)} onDelete={() => setAEliminar(p)} />)
+              filtered.map((p) => <ProductRow key={p.id} p={p} onEdit={() => setModal(p)} />)
             )
           }
         </Loadable>
