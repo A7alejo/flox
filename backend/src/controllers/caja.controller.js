@@ -1,4 +1,5 @@
 const cajaService = require('../services/caja.service');
+const pushService = require('../services/push.service');
 const asyncHandler = require('../utils/asyncHandler');
 
 const registrarVenta = asyncHandler(async (req, res) => {
@@ -7,6 +8,7 @@ const registrarVenta = asyncHandler(async (req, res) => {
   const { items, productoId, cantidad, medioPago, estado, clienteNombre } = req.body;
   const resultado = await cajaService.registrarVenta({ items, productoId, cantidad, medioPago, estado, clienteNombre });
   res.status(201).json(resultado);
+  pushService.notificar('venta', req.usuario, { venta: resultado.venta }); // sin await: no frena la respuesta
 });
 
 const listarVentas = asyncHandler(async (req, res) => {
@@ -17,6 +19,7 @@ const listarVentas = asyncHandler(async (req, res) => {
 const cobrarVenta = asyncHandler(async (req, res) => {
   const resultado = await cajaService.cobrarVenta(req.params.id, { medioPago: req.body.medioPago });
   res.json(resultado);
+  pushService.notificar('cobro', req.usuario, { venta: resultado.venta });
 });
 
 // Admin y operador (ver caja.routes.js). Devuelven el stock que volvió.
@@ -32,6 +35,7 @@ const registrarEgreso = asyncHandler(async (req, res) => {
   const { monto, concepto, medioPago, envioId } = req.body;
   const movimiento = await cajaService.registrarEgreso({ monto, concepto, medioPago, envioId });
   res.status(201).json(movimiento);
+  pushService.notificar('gasto', req.usuario, { movimiento });
 });
 
 const listarMovimientos = asyncHandler(async (req, res) => {

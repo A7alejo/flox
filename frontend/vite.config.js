@@ -35,6 +35,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Avisos push (push-sw.js, en /public): se suman al service worker generado.
+        importScripts: ['push-sw.js'],
         // Solo se precachea el shell estático de la app. Las llamadas a la API
         // (otro origen, con cookie de sesión) nunca se cachean: van siempre a la red.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],

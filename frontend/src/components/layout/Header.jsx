@@ -5,6 +5,7 @@
 // donde se ve el usuario y se puede cerrar sesión.
 // Alto total 72px (64 de franja + 8 de ola): la barra lateral se ubica debajo.
 import { TemaSelector } from './TemaSelector';
+import { NotificacionesSelector } from './NotificacionesSelector';
 import { Marca, Ola } from '../ui/Marca';
 
 const TITULOS = {
@@ -33,13 +34,14 @@ export function Header({ active, usuario, onLogout }) {
 
         <div className="flex items-center gap-2.5 md:gap-3.5 min-w-0">
           {/* Celular: nombre a la izquierda del avatar; escritorio: a la derecha */}
-          <div className="flex flex-col items-end md:items-start leading-tight min-w-0 md:order-2">
+          <div className="hidden min-[430px]:flex flex-col items-end md:items-start leading-tight min-w-0 md:order-2">
             <span className="text-sm md:text-[15px] font-bold truncate max-w-[9rem] md:max-w-[14rem]">{usuario.nombre}</span>
             <span className="text-xs md:text-[13px] text-white/75">{rol}</span>
           </div>
           <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/15 text-white font-display font-bold text-base flex items-center justify-center shrink-0 md:order-1" aria-hidden="true">
             {inicial}
           </div>
+          <NotificacionesSelector />
           <TemaSelector />
           <button
             type="button"

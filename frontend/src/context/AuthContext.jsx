@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import * as authApi from '../api/auth';
 import { setUnauthorizedHandler } from '../api/client';
+import { quitarDelServidor } from '../lib/push';
 
 const AuthContext = createContext(null);
 
@@ -36,6 +37,7 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     try {
+      await quitarDelServidor().catch(() => {}); // antes de salir: todavía hay sesión para pedirlo
       await authApi.logout();
     } finally {
       setUsuario(null);

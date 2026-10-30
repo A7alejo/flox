@@ -1,4 +1,5 @@
 const productosService = require('../services/productos.service');
+const pushService = require('../services/push.service');
 const asyncHandler = require('../utils/asyncHandler');
 const HttpError = require('../utils/HttpError');
 
@@ -23,6 +24,7 @@ const crear = asyncHandler(async (req, res) => {
     nombre, categoria, stockActual, stockMinimo, costoBase, porcentajeMargen, codigoBarras,
   });
   res.status(201).json(producto);
+  pushService.notificar('producto', req.usuario, { producto });
 });
 
 const actualizar = asyncHandler(async (req, res) => {
