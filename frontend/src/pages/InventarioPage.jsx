@@ -56,7 +56,10 @@ function ProductRow({ p, onEdit }) {
       <ProductoImagen nombre={p.nombre} />
       <div className="flex-1 min-w-0 flex flex-col gap-0.5">
         <span className="font-semibold text-[15px] leading-snug">{p.nombre}</span>
-        <span className="text-[15px] font-bold text-flox-700 tabular-nums">{money(p.precioVenta)}</span>
+        <span className="flex items-baseline gap-1.5 min-w-0 text-[15px]">
+          <span className="font-bold text-flox-700 tabular-nums shrink-0">{money(p.precioVenta)}</span>
+          <span className="text-xs text-slate-500 truncate">· {categoriaParaMostrar(p) || SIN_CATEGORIA}</span>
+        </span>
       </div>
       <Badge className={'!h-8 !px-3 !text-sm ' + s.classes}>{s.label}</Badge>
       <Icon.chevronRight className="w-5 h-5 text-slate-400 shrink-0 -mr-1" aria-hidden="true" />
